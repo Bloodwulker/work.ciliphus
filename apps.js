@@ -65,3 +65,31 @@ APPS.forEach(a => {
   el.style.setProperty("--face", `url('${BLOB}${a.face}')`);
   grid.appendChild(el);
 });
+
+/* fan open/close. a badge with data-fan="x" opens the div#x. one at a time, 5s auto-close. */
+let fanTimer;
+function closeFans() {
+  document.querySelectorAll(".fan.open").forEach(f => f.classList.remove("open"));
+  document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
+}
+document.querySelectorAll(".badge[data-fan]").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const fan = document.getElementById(btn.dataset.fan);
+    if (!fan) return;
+    const wasOpen = fan.classList.contains("open");
+    closeFans();
+    clearTimeout(fanTimer);
+    if (!wasOpen) {
+      const r = btn.getBoundingClientRect();
+      fan.style.left = (r.left + r.width / 2) + "px";
+      fan.style.top = (r.top + r.height / 2) + "px";
+      fan.classList.add("open");
+      btn.classList.add("lit");
+      fanTimer = setTimeout(closeFans, 5000);
+    }
+  });
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".badge") && !e.target.closest(".fan")) closeFans();
+});
