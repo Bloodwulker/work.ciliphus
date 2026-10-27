@@ -1,0 +1,52 @@
+html, body { margin: 0; height: 100%; background: #0b1220; }
+.flag {
+  position: fixed; top: 0; left: 0; height: 100%; width: auto; min-width: 100%;
+  object-fit: cover; object-position: left center; z-index: 0; filter: brightness(0.35);
+}
+.grid {
+  position: relative; z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 28px; padding: 40px;
+  pointer-events: none;
+}
+.badge {
+  pointer-events: auto;
+  width: 160px; height: 160px; margin: 0 auto;
+  border: 0; padding: 0; cursor: pointer; border-radius: 50%;
+  background: var(--face) center / cover no-repeat;
+  box-shadow: 0 0 0 3px #eee, 0 0 0 6px #222, 0 4px 12px rgba(0,0,0,0.65);
+}
+.badge:hover {
+  animation: rumble 0.12s linear infinite, glow 1.2s ease-in-out infinite;
+}
+@keyframes rumble {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-2px, 1px); }
+  50%  { transform: translate(2px, -1px); }
+  75%  { transform: translate(-1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(255,255,255,0.9),
+      0 0 12px 4px #fff,
+      0 0 28px 10px rgba(196,18,48,0.7),
+      0 0 50px 18px rgba(10,49,97,0.6);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px #fff,
+      0 0 20px 8px #fff,
+      0 0 42px 16px rgba(196,18,48,0.85),
+      0 0 70px 26px rgba(10,49,97,0.75);
+  }
+}
+.cursor-trail {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 9999; overflow: visible;
+}
+.cursor-trail__glow { fill: none; stroke-width: 14; stroke-linecap: round; filter: blur(6px); opacity: 0.9; }
+.cursor-trail__line { fill: none; stroke-width: 3; stroke-linecap: round; }
+.cursor-trail__spark { fill: #fff; filter: drop-shadow(0 0 6px #fff); }
