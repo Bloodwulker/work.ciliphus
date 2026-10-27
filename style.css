@@ -50,3 +50,5 @@ html, body { margin: 0; height: 100%; background: #0b1220; }
 .cursor-trail__glow { fill: none; stroke-width: 14; stroke-linecap: round; filter: blur(6px); opacity: 0.9; }
 .cursor-trail__line { fill: none; stroke-width: 3; stroke-linecap: round; }
 .cursor-trail__spark { fill: #fff; filter: drop-shadow(0 0 6px #fff); }
+
+.container { display: none !important; }
