@@ -1,0 +1,13 @@
+<svg class="cursor-trail" data-visible="false" data-moving="false" aria-hidden="true">
+  <defs>
+    <linearGradient id="cursor-trail-gradient" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c41230" />
+      <stop offset="50%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#0a3161" />
+    </linearGradient>
+  </defs>
+  <path class="cursor-trail__glow" stroke="url(#cursor-trail-gradient)" d=""></path>
+  <path class="cursor-trail__line" stroke="url(#cursor-trail-gradient)" d=""></path>
+  <circle class="cursor-trail__spark" r="4" cx="0" cy="0"></circle>
+  <circle class="cursor-trail__ripple" r="8" cx="0" cy="0"></circle>
+</svg>
