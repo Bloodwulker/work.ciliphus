@@ -6,8 +6,8 @@ html, body { margin: 0; height: 100%; background: #0b1220; }
 .grid {
   position: relative; z-index: 2;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 28px; padding: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 80px; padding: 60px;
   pointer-events: none;
 }
 .badge {
