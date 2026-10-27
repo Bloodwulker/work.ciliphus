@@ -52,3 +52,31 @@ html, body { margin: 0; height: 100%; background: #0b1220; }
 .cursor-trail__spark { fill: #fff; filter: drop-shadow(0 0 6px #fff); }
 
 .container { display: none !important; }
+
+/* fan: sub-badges that open from a parent badge */
+.fan {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+}
+.fan .sub {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background: var(--face) center / cover no-repeat;
+  box-shadow: 0 0 0 3px #eee, 0 0 0 6px #222;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+.fan.open { pointer-events: auto; }
+.fan.open .sub { opacity: 1; pointer-events: auto; }
+.fan.open .sub:nth-child(1) { transform: translate(-110px, -20px); }
+.fan.open .sub:nth-child(2) { transform: translate(110px, -20px); }
+.fan.open .sub:nth-child(3) { transform: translate(0, 110px); }
+.fan.open .sub:nth-child(4) { transform: translate(0, -110px); }
+.fan.open .sub:nth-child(5) { transform: translate(-80px, 80px); }
+.badge.lit {
+  animation: rumble 0.12s linear infinite, glow 1.2s ease-in-out infinite;
+}
