@@ -108,3 +108,12 @@ grid.addEventListener("click", (e) => {
   clicks[badge.title] = (clicks[badge.title] || 0) + 1;
   localStorage.setItem(KEY, JSON.stringify(clicks));
 });
+/* filter badges by name */
+const finder = document.querySelector(".finder");
+finder.addEventListener("input", () => {
+  const q = finder.value.trim().toLowerCase();
+  document.querySelectorAll(".badge").forEach(b => {
+    const name = (b.title || "").toLowerCase();
+    b.classList.toggle("hidden", q && !name.includes(q));
+  });
+});
