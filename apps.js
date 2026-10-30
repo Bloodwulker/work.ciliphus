@@ -1,9 +1,6 @@
 /* builds the badge grid from a list. swap the placeholder entries for real ones later. */
 const APPS = [
   { name: "ConnectWise Manage", face: "cwm.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI0ECL30JK35H6X6GSKV/sso" },
-  /*{ name: "Automate - CHS", face: "cwachs.png", href: "https://lt.canteytechnology.com/automate/" },
-  /*{ name: "Automate - FL", face: "cwafl.png", href: "https://monitor.pciicp.com/automate" },
-  /*{ name: "Automate - VA", face: "cwava.png", href: "https://lt.ncg-net.com/automate/login" },
   { name: "Automate", face: "cwa.png", fan: "automate" },
   { name: "ITGlue", face: "itg.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIUXAZJSYT1PAVZIDAK0/sso" },
   { name: "Strety", face: "strety.png", href: "https://2.strety.com/" },
