@@ -93,3 +93,18 @@ document.querySelectorAll(".badge[data-fan]").forEach(btn => {
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".badge") && !e.target.closest(".fan")) closeFans();
 });
+/* click counter + sort by most used (this browser only) */
+const KEY = "work-clicks";
+const clicks = JSON.parse(localStorage.getItem(KEY) || "{}");
+function sortGrid() {
+  [...grid.children]
+    .sort((a, b) => (clicks[b.title] || 0) - (clicks[a.title] || 0))
+    .forEach(el => grid.appendChild(el));
+}
+sortGrid();
+grid.addEventListener("click", (e) => {
+  const badge = e.target.closest(".badge");
+  if (!badge || !badge.title) return;
+  clicks[badge.title] = (clicks[badge.title] || 0) + 1;
+  localStorage.setItem(KEY, JSON.stringify(clicks));
+});
