@@ -77,9 +77,9 @@ html, body { margin: 0; height: 100%; background: #0b1220; }
 }
 .fan.open { pointer-events: auto; }
 .fan.open .sub { opacity: 1; pointer-events: auto; }
-.fan.open .sub:nth-child(1) { transform: translate(-110px, -20px); }
-.fan.open .sub:nth-child(2) { transform: translate(110px, -20px); }
-.fan.open .sub:nth-child(3) { transform: translate(0, 110px); }
+.fan.open .sub:nth-child(1) { transform: translate(-180px, -30px); }
+.fan.open .sub:nth-child(2) { transform: translate(180px, -30px); }
+.fan.open .sub:nth-child(3) { transform: translate(0px, 180px); }
 .fan.open .sub:nth-child(4) { transform: translate(0, -110px); }
 .fan.open .sub:nth-child(5) { transform: translate(-80px, 80px); }
 .badge.lit {
