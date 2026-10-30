@@ -85,8 +85,8 @@ document.querySelectorAll(".badge[data-fan]").forEach(btn => {
     clearTimeout(fanTimer);
     if (!wasOpen) {
       const r = btn.getBoundingClientRect();
-      fan.style.left = (r.left + r.width / 2) + "px";
-      fan.style.top = (r.top + r.height / 2) + "px";
+fan.style.left = (r.left + r.width / 2 - 50) + "px";
+fan.style.top  = (r.top  + r.height / 2 - 50) + "px";
       fan.classList.add("open");
       btn.classList.add("lit");
       fanTimer = setTimeout(closeFans, 5000);
