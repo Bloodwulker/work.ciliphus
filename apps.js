@@ -127,3 +127,9 @@ finder.addEventListener("focus", () => {
   clearTimeout(finderIdle);
   if (!finder.value.trim()) finderIdle = setTimeout(() => finder.blur(), 5000);
 });
+document.querySelectorAll(".fan .sub").forEach(el => {
+  const face = el.style.getPropertyValue("--face");
+  if (face && !face.includes("http")) {
+    el.style.setProperty("--face", face.replace("url('", `url('${BLOB}`));
+  }
+});
