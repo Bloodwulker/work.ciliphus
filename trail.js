@@ -26,14 +26,15 @@
     if (Math.random() < 0.65) spawn(mx, my);
   });
   addEventListener("pointerdown", (e) => {
-    ripple.setAttribute("cx", e.clientX);
-    ripple.setAttribute("cy", e.clientY);
-    ripple.animate(
-      [{ r: 8, opacity: 0.8 }, { r: 46, opacity: 0 }],
-      { duration: 450, easing: "ease-out" }
-    );
-    for (let i = 0; i < 10; i++) spawn(e.clientX, e.clientY, 2.4);
-  });
+  ripple.setAttribute("cx", e.clientX);
+  ripple.setAttribute("cy", e.clientY);
+  ripple.style.opacity = "0.8";
+  ripple.animate(
+    [{ r: 8, opacity: 0.8 }, { r: 46, opacity: 0 }],
+    { duration: 450, easing: "ease-out" }
+  ).onfinish = () => { ripple.style.opacity = "0"; };
+  for (let i = 0; i < 10; i++) spawn(e.clientX, e.clientY, 2.4);
+});
 
   function spawn(x, y, kick = 1) {
     const use = document.createElementNS(ns, "use");
