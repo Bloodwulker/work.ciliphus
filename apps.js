@@ -110,10 +110,17 @@ grid.addEventListener("click", (e) => {
 });
 /* filter badges by name */
 const finder = document.querySelector(".finder");
+let finderIdle;
 finder.addEventListener("input", () => {
   const q = finder.value.trim().toLowerCase();
   document.querySelectorAll(".badge").forEach(b => {
     const name = (b.title || "").toLowerCase();
     b.classList.toggle("hidden", q && !name.includes(q));
   });
+  clearTimeout(finderIdle);
+  if (!q) finderIdle = setTimeout(() => finder.blur(), 5000);
+});
+finder.addEventListener("focus", () => {
+  clearTimeout(finderIdle);
+  if (!finder.value.trim()) finderIdle = setTimeout(() => finder.blur(), 5000);
 });
