@@ -18,7 +18,12 @@ html, body { margin: 0; height: 100%; background: #0b1220; }
   box-shadow: 0 0 0 3px #eee, 0 0 0 6px #222, 0 4px 12px rgba(0,0,0,0.65);
 }
 .badge:hover {
-  animation: rumble 0.12s linear infinite, glow 1.2s ease-in-out infinite;
+  animation: glow 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
+}
+.fan.open .sub:hover {
+  animation: glow 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
 }
 @keyframes rumble {
   0%   { transform: translate(0, 0); }
