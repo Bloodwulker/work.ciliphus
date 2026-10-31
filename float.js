@@ -32,40 +32,46 @@
   }
 
   function start() {
-    if (floating) return;
-    floating = true;
-    document.body.classList.add("floating");
-    document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
-    document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
+  if (floating) return;
+  floating = true;
 
+  // measure while still in the grid
+  const spots = badges().map(b => {
+    const r = b.getBoundingClientRect();
+    return { b, x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  });
+
+  document.body.classList.add("floating");
+  document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
+  document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
+
+  spots.forEach(({ b, x, y }) => {
+    b.dataset.x = x;
+    b.dataset.y = y;
+    b.style.left = x + "px";
+    b.style.top  = y + "px";
+    b.style.transform = "translate(-50%,-50%)";
+  });
+
+  let last = performance.now();
+  function tick(now) {
+    if (!floating) return;
+    const dt = (now - last) / 1000;
+    last = now;
     badges().forEach(b => {
-      const r = b.getBoundingClientRect();
-      b.dataset.x = r.left + r.width / 2;
-      b.dataset.y = r.top + r.height / 2;
-      b.style.left = b.dataset.x + "px";
-      b.style.top  = b.dataset.y + "px";
-      b.style.transform = "translate(-50%,-50%)";
+      if (b.classList.contains("melting")) return;
+      let y = parseFloat(b.dataset.y) - SPEED * dt;
+      b.dataset.y = y;
+      b.style.top = y + "px";
+      if (y < 40) {
+        b.classList.add("melting");
+        b.style.animation = "rumble 0.12s linear 4, melt 1.4s ease-in 0.5s forwards";
+      }
     });
-
-    let last = performance.now();
-    function tick(now) {
-      if (!floating) return;
-      const dt = (now - last) / 1000;
-      last = now;
-      badges().forEach(b => {
-        if (b.classList.contains("melting")) return;
-        let y = parseFloat(b.dataset.y) - SPEED * dt;
-        b.dataset.y = y;
-        b.style.top = y + "px";
-        if (y < 40) {
-          b.classList.add("melting");
-          b.style.animation = "rumble 0.12s linear 4, melt 1.4s ease-in 0.5s forwards";
-        }
-      });
-      raf = requestAnimationFrame(tick);
-    }
     raf = requestAnimationFrame(tick);
   }
+  raf = requestAnimationFrame(tick);
+}
 
   function stop() {
     floating = false;
