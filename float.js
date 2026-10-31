@@ -36,17 +36,14 @@
   const r = b.getBoundingClientRect();
   const face = getComputedStyle(b).backgroundImage;
   const count = 6 + Math.floor(Math.random() * 5);
-  const power = 0.6 + Math.random() * 0.9;
+  const pieces = [];
   for (let i = 0; i < count; i++) {
     const s = document.createElement("div");
     const ang = Math.random() * Math.PI * 2;
-    const dist = (60 + Math.random() * 140) * power;
-    const tx = Math.cos(ang) * dist;
-    const ty = (Math.sin(ang) * dist * 0.5) - 20;
+    const power = 80 + Math.random() * 160;
     const size = 22 + Math.random() * 18;
     const bgX = (Math.random() - 0.5) * r.width * 0.9;
     const bgY = (Math.random() - 0.5) * r.height * 0.9;
-    const spin = (Math.random() > 0.5 ? 1 : -1) * (80 + Math.random() * 200);
     s.style.cssText = `
       position:fixed;
       left:${r.left + r.width / 2 - size / 2}px;
@@ -57,36 +54,66 @@
       background-position:${bgX}px ${bgY}px;
       border-radius:${10 + Math.random() * 20}%;
       pointer-events:none; z-index:21;
-      animation: shardfall ${2.2 + Math.random() * 0.8}s ease-in forwards;
-      --tx:${tx}px; --ty:${ty}px; --spin:${spin}deg;
     `;
     document.body.appendChild(s);
-    s.addEventListener("animationend", () => {
-      for (let j = 0; j < 3; j++) {
-        const mini = document.createElement("div");
-        const mAng = Math.random() * Math.PI * 2;
-        const mDist = 12 + Math.random() * 24;
-        const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
-        mini.style.cssText = `
-          position:fixed;
-          left:${s.getBoundingClientRect().left}px;
-          top:${s.getBoundingClientRect().top}px;
-          width:14px; height:14px;
-          background:${face};
-          background-size:${r.width}px ${r.height}px;
-          background-position:${bgX + (Math.random()-0.5)*20}px ${bgY + (Math.random()-0.5)*20}px;
-          border-radius:30%;
-          pointer-events:none; z-index:22;
-          animation: minishatter 0.9s ease-out forwards;
-          --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 15}px; --mspin:${mSpin}deg;
-        `;
-        document.body.appendChild(mini);
-        setTimeout(() => mini.remove(), 1000);
-      }
-      s.remove();
+    pieces.push({
+      el: s,
+      x: r.left + r.width / 2 - size / 2,
+      y: r.top + r.height / 2 - size / 2,
+      vx: Math.cos(ang) * power,
+      vy: Math.sin(ang) * power * 0.6 - 40,
+      rot: 0,
+      spin: (Math.random() > 0.5 ? 1 : -1) * (120 + Math.random() * 240),
+      size, face, bgX, bgY,
+      done: false
     });
   }
   b.style.opacity = "0";
+
+  let last = performance.now();
+  function tick(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.done) return;
+      alive = true;
+      p.vy += 420 * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.rot += p.spin * dt;
+      p.el.style.left = p.x + "px";
+      p.el.style.top = p.y + "px";
+      p.el.style.transform = `rotate(${p.rot}deg)`;
+      if (p.y > innerHeight - 140) {
+        p.done = true;
+        for (let j = 0; j < 3; j++) {
+          const mini = document.createElement("div");
+          const mAng = Math.random() * Math.PI * 2;
+          const mDist = 12 + Math.random() * 24;
+          const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
+          mini.style.cssText = `
+            position:fixed;
+            left:${p.x}px;
+            top:${p.y}px;
+            width:14px; height:14px;
+            background:${p.face};
+            background-size:${r.width}px ${r.height}px;
+            background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
+            border-radius:30%;
+            pointer-events:none; z-index:22;
+            animation: minishatter 0.9s ease-out forwards;
+            --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 15}px; --mspin:${mSpin}deg;
+          `;
+          document.body.appendChild(mini);
+          setTimeout(() => mini.remove(), 1000);
+        }
+        p.el.remove();
+      }
+    });
+    if (alive) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 }
 
   function resetIdle() {
