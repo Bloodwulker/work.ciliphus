@@ -115,32 +115,35 @@ let finderIdle;
 finder.addEventListener("input", () => {
   const q = finder.value.trim().toLowerCase();
   document.querySelectorAll(".badge").forEach(b => {
-  if (b.closest(".fan")) return;
-  const name = (b.title || "").toLowerCase();
-  b.classList.toggle("hidden", q && !name.includes(q));
-});
+    if (b.closest(".fan")) return;
+    const name = (b.title || "").toLowerCase();
+    b.classList.toggle("hidden", q && !name.includes(q));
+  });
   document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
   document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
   if (q) {
-  document.querySelectorAll(".badge[data-fan]").forEach(b => {
-    if ((b.title || "").toLowerCase().includes(q) && !b.classList.contains("hidden")) {
-      const fan = document.getElementById(b.dataset.fan);
-      if (fan) {
-        const r = b.getBoundingClientRect();
-        fan.style.left = (r.left + r.width / 2 - 50) + "px";
-        fan.style.top  = (r.top  + r.height / 2 - 50) + "px";
-        fan.classList.add("open");
-        b.classList.add("lit");
+    document.querySelectorAll(".badge[data-fan]").forEach(b => {
+      if ((b.title || "").toLowerCase().includes(q) && !b.classList.contains("hidden")) {
+        const fan = document.getElementById(b.dataset.fan);
+        if (fan) {
+          const r = b.getBoundingClientRect();
+          fan.style.left = (r.left + r.width / 2 - 50) + "px";
+          fan.style.top  = (r.top  + r.height / 2 - 50) + "px";
+          fan.classList.add("open");
+          b.classList.add("lit");
+        }
       }
-    }
-  });
-}
+    });
+  }
   clearTimeout(finderIdle);
-finderIdle = setTimeout(() => {
-  finder.value = "";
-  finder.dispatchEvent(new Event("input"));
-  finder.blur();
-}, 10000);
+  if (q) {
+    finderIdle = setTimeout(() => {
+      finder.value = "";
+      finder.dispatchEvent(new Event("input"));
+      finder.blur();
+    }, 10000);
+  }
+});
 finder.addEventListener("focus", () => {
   clearTimeout(finderIdle);
   if (!finder.value.trim()) finderIdle = setTimeout(() => finder.blur(), 5000);
