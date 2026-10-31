@@ -85,7 +85,7 @@
       p.el.style.left = p.x + "px";
       p.el.style.top = p.y + "px";
       p.el.style.transform = `rotate(${p.rot}deg)`;
-      if (p.y > innerHeight - 140) {
+      if (p.y > innerHeight - 60) {
         p.done = true;
         for (let j = 0; j < 3; j++) {
           const mini = document.createElement("div");
