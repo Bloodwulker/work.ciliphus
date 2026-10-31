@@ -10,17 +10,33 @@
     z-index: 20;
   }
   body.floating .badge.melting { pointer-events: none; }
-  @keyframes melt {
-    0%   { transform: translate(-50%,-50%) scaleY(1); opacity: 1; filter: none; }
-    30%  { transform: translate(-50%,-50%) scaleY(1.15) scaleX(0.9); }
-    100% { transform: translate(-50%, 40vh) scaleY(0.05) scaleX(1.4); opacity: 0; filter: blur(6px); }
-  }
   @keyframes float-rumble {
     0%   { transform: translate(-50%,-50%) translate(0,0); }
     25%  { transform: translate(-50%,-50%) translate(-2px,1px); }
     50%  { transform: translate(-50%,-50%) translate(2px,-1px); }
     75%  { transform: translate(-50%,-50%) translate(-1px,-1px); }
     100% { transform: translate(-50%,-50%) translate(0,0); }
+  }
+  @keyframes drip {
+    0%   { transform: translate(-50%,-50%) scaleY(1); opacity: 1; filter: none; }
+    40%  { transform: translate(-50%,-30%) scaleY(1.8) scaleX(0.7); }
+    100% { transform: translate(-50%, 60vh) scaleY(0.15) scaleX(1.6); opacity: 0; filter: blur(4px); }
+  }
+  @keyframes shrink {
+    0%   { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+  }
+  @keyframes burst {
+    0%   { transform: translate(-50%,-50%) scale(1); opacity: 1; filter: none; }
+    100% { transform: translate(-50%,-50%) scale(1.6); opacity: 0; filter: blur(8px); }
+  }
+  @keyframes shatter {
+    0%   { transform: translate(-50%,-50%) rotate(0); opacity: 1; }
+    100% { transform: translate(-50%, 50vh) rotate(180deg) scale(0.3); opacity: 0; }
+  }
+  @keyframes smoke {
+    0%   { transform: translate(-50%,-50%) scale(1); opacity: 1; filter: none; }
+    100% { transform: translate(-50%,-120%) scale(1.4); opacity: 0; filter: blur(12px); }
   }
 `;
   document.head.appendChild(style);
@@ -69,10 +85,12 @@
         b.style.top = y + "px";
         const half = b.offsetHeight / 2;
         if (y - half <= 4) {
-          b.classList.add("melting");
-          b.style.top = half + "px";
-          b.style.animation = "float-rumble 0.12s linear 4, melt 1.4s ease-in 0.48s forwards";
-        }
+  b.classList.add("melting");
+  b.style.top = half + "px";
+  const styles = ["drip", "shrink", "burst", "shatter", "smoke"];
+  const pick = styles[Math.floor(Math.random() * styles.length)];
+  b.style.animation = `float-rumble 0.12s linear 4, ${pick} 1.6s ease-in 0.48s forwards`;
+}
       });
       raf = requestAnimationFrame(tick);
     }
