@@ -18,9 +18,9 @@
     100% { transform: translate(-50%,-50%) translate(0,0); }
   }
   @keyframes shardfall {
-    0%   { transform: translate(0,0) rotate(0); opacity: 1; }
-    100% { transform: translate(var(--tx), var(--ty)) rotate(180deg) scale(0.3); opacity: 0; }
-  }
+  0%   { transform: translate(0,0) rotate(0); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) rotate(var(--spin)) scale(0.3); opacity: 0; }
+}
 `;
   document.head.appendChild(style);
 
@@ -28,31 +28,35 @@
   const badges = () => [...document.querySelectorAll(".badge:not(.sub)")];
 
   function makeShards(b) {
-    const r = b.getBoundingClientRect();
-    const face = getComputedStyle(b).backgroundImage;
-    for (let i = 0; i < 8; i++) {
-      const s = document.createElement("div");
-      const ang = (i / 8) * Math.PI * 2;
-      const dist = 50 + Math.random() * 90;
-      const tx = Math.cos(ang) * dist;
-      const ty = Math.sin(ang) * dist + 60;
-      s.style.cssText = `
-        position:fixed;
-        left:${r.left + r.width / 2 - 16}px;
-        top:${r.top + r.height / 2 - 16}px;
-        width:32px; height:32px;
-        background:${face}; background-size:${r.width}px ${r.height}px;
-        background-position:center;
-        border-radius:18%;
-        pointer-events:none; z-index:21;
-        animation: shardfall 1.8s ease-out forwards;
-        --tx:${tx}px; --ty:${ty}px;
-      `;
-      document.body.appendChild(s);
-      setTimeout(() => s.remove(), 2000);
-    }
-    b.style.opacity = "0";
+  const r = b.getBoundingClientRect();
+  const face = getComputedStyle(b).backgroundImage;
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement("div");
+    const ang = (i / 8) * Math.PI * 2;
+    const dist = 50 + Math.random() * 90;
+    const tx = Math.cos(ang) * dist;
+    const ty = Math.sin(ang) * dist + 60;
+    const bgX = (Math.random() - 0.5) * r.width * 0.8;
+    const bgY = (Math.random() - 0.5) * r.height * 0.8;
+    const spin = (Math.random() > 0.5 ? 1 : -1) * (120 + Math.random() * 200);
+    s.style.cssText = `
+      position:fixed;
+      left:${r.left + r.width / 2 - 16}px;
+      top:${r.top + r.height / 2 - 16}px;
+      width:32px; height:32px;
+      background:${face};
+      background-size:${r.width}px ${r.height}px;
+      background-position:${bgX}px ${bgY}px;
+      border-radius:18%;
+      pointer-events:none; z-index:21;
+      animation: shardfall 1.8s ease-out forwards;
+      --tx:${tx}px; --ty:${ty}px; --spin:${spin}deg;
+    `;
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 2000);
   }
+  b.style.opacity = "0";
+}
 
   function resetIdle() {
     clearTimeout(idleTimer);
