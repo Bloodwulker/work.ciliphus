@@ -1,6 +1,5 @@
 (() => {
-  const IDLE = 15000;          // 15s for testing
-  const SPEED = 28;            // px per second, upward
+  const IDLE = 15000;
   const style = document.createElement("style");
   style.textContent = `
     body.floating .grid { pointer-events: none; }
@@ -10,10 +9,7 @@
       transition: none !important;
       z-index: 20;
     }
-    body.floating .badge.melting {
-      animation: melt 1.4s ease-in forwards;
-      pointer-events: none;
-    }
+    body.floating .badge.melting { pointer-events: none; }
     @keyframes melt {
       0%   { transform: translate(-50%,-50%) scaleY(1); opacity: 1; filter: none; }
       30%  { transform: translate(-50%,-50%) scaleY(1.15) scaleX(0.9); }
@@ -32,48 +28,49 @@
   }
 
   function start() {
-  if (floating) return;
-  floating = true;
+    if (floating) return;
+    floating = true;
 
-  // measure while still in the grid
-  const spots = badges().map(b => {
-    const r = b.getBoundingClientRect();
-    return { b, x: r.left + r.width / 2, y: r.top + r.height / 2 };
-  });
+    const spots = badges().map(b => {
+      const r = b.getBoundingClientRect();
+      return { b, x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
 
-  document.body.classList.add("floating");
-  document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
-  document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
+    document.body.classList.add("floating");
+    document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
+    document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
 
-  spots.forEach(({ b, x, y }) => {
-  b.dataset.x = x;
-  b.dataset.y = y;
-  b.dataset.speed = 14 + Math.random() * 28;   // 14–42 px/s
-  b.style.left = x + "px";
-  b.style.top  = y + "px";
-  b.style.transform = "translate(-50%,-50%)";
-});
+    spots.forEach(({ b, x, y }) => {
+      b.dataset.x = x;
+      b.dataset.y = y;
+      b.dataset.speed = 14 + Math.random() * 28;
+      b.style.left = x + "px";
+      b.style.top  = y + "px";
+      b.style.transform = "translate(-50%,-50%)";
+    });
 
-let last = performance.now();
-function tick(now) {
-  if (!floating) return;
-  const dt = (now - last) / 1000;
-  last = now;
-  badges().forEach(b => {
-    if (b.classList.contains("melting")) return;
-    const speed = parseFloat(b.dataset.speed);
-    let y = parseFloat(b.dataset.y) - speed * dt;
-    b.dataset.y = y;
-    b.style.top = y + "px";
-    const half = b.offsetHeight / 2;
-    if (y - half <= 4) {                        // top edge hits top
-      b.classList.add("melting");
-      b.style.top = half + "px";                // pin the top edge
-      b.style.animation = "rumble 0.12s linear 4, melt 1.4s ease-in 0.48s forwards";
+    let last = performance.now();
+    function tick(now) {
+      if (!floating) return;
+      const dt = (now - last) / 1000;
+      last = now;
+      badges().forEach(b => {
+        if (b.classList.contains("melting")) return;
+        const speed = parseFloat(b.dataset.speed);
+        let y = parseFloat(b.dataset.y) - speed * dt;
+        b.dataset.y = y;
+        b.style.top = y + "px";
+        const half = b.offsetHeight / 2;
+        if (y - half <= 4) {
+          b.classList.add("melting");
+          b.style.top = half + "px";
+          b.style.animation = "rumble 0.12s linear 4, melt 1.4s ease-in 0.48s forwards";
+        }
+      });
+      raf = requestAnimationFrame(tick);
     }
-  });
-  raf = requestAnimationFrame(tick);
-}
+    raf = requestAnimationFrame(tick);
+  }
 
   function stop() {
     floating = false;
@@ -84,6 +81,7 @@ function tick(now) {
       b.style.left = b.style.top = b.style.transform = b.style.animation = "";
       delete b.dataset.x;
       delete b.dataset.y;
+      delete b.dataset.speed;
     });
   }
 
