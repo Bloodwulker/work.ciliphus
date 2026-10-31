@@ -64,13 +64,14 @@
     document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
 
     spots.forEach(({ b, x, y }) => {
-      b.dataset.x = x;
-      b.dataset.y = y;
-      b.dataset.speed = 14 + Math.random() * 28;
-      b.style.left = x + "px";
-      b.style.top  = y + "px";
-      b.style.transform = "translate(-50%,-50%)";
-    });
+  b.dataset.x = x;
+  b.dataset.y = y;
+  b.dataset.speed = 14 + Math.random() * 28;
+  b.dataset.lean = (Math.random() * 2 - 1) * 0.6;   // -0.6 to 0.6
+  b.style.left = x + "px";
+  b.style.top  = y + "px";
+  b.style.transform = "translate(-50%,-50%)";
+});
 
     let last = performance.now();
     function tick(now) {
@@ -78,20 +79,27 @@
       const dt = (now - last) / 1000;
       last = now;
       badges().forEach(b => {
-        if (b.classList.contains("melting")) return;
-        const speed = parseFloat(b.dataset.speed);
-        let y = parseFloat(b.dataset.y) - speed * dt;
-        b.dataset.y = y;
-        b.style.top = y + "px";
-        const half = b.offsetHeight / 2;
-        if (y - half <= 4) {
-  b.classList.add("melting");
-  b.style.top = half + "px";
-  const styles = ["drip", "shrink", "burst", "shatter", "smoke"];
-  const pick = styles[Math.floor(Math.random() * styles.length)];
-  b.style.animation = `float-rumble 0.12s linear 4, ${pick} 1.6s ease-in 0.48s forwards`;
-}
-      });
+  if (b.classList.contains("melting")) return;
+  const speed = parseFloat(b.dataset.speed);
+  const lean  = parseFloat(b.dataset.lean);
+  let y = parseFloat(b.dataset.y) - speed * dt;
+  let x = parseFloat(b.dataset.x) + lean * speed * dt;
+  const halfW = b.offsetWidth / 2;
+  if (x - halfW < 0) { x = halfW; b.dataset.lean = Math.abs(lean); }
+  if (x + halfW > innerWidth) { x = innerWidth - halfW; b.dataset.lean = -Math.abs(lean); }
+  b.dataset.x = x;
+  b.dataset.y = y;
+  b.style.left = x + "px";
+  b.style.top  = y + "px";
+  const half = b.offsetHeight / 2;
+  if (y - half <= 4) {
+    b.classList.add("melting");
+    b.style.top = half + "px";
+    const styles = ["drip", "shrink", "burst", "shatter", "smoke"];
+    const pick = styles[Math.floor(Math.random() * styles.length)];
+    b.style.animation = `float-rumble 0.12s linear 4, ${pick} 1.6s ease-in 0.48s forwards`;
+  }
+});
       raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
