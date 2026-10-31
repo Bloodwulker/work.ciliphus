@@ -18,74 +18,73 @@
     100% { transform: translate(-50%,-50%) translate(0,0); }
   }
   @keyframes shardfall {
-  0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
-  30%  { transform: translate(calc(var(--tx) * 1.4), calc(var(--ty) * 0.6)) rotate(calc(var(--spin) * 0.4)) scale(1); opacity: 1; }
-  100% { transform: translate(var(--tx), calc(100vh - 140px)) rotate(var(--spin)) scale(0.9); opacity: 1; }
-}
-@keyframes minishatter {
-  0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--mtx), var(--mty)) rotate(var(--mspin)) scale(0.15); opacity: 0; }
-}
+    0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
+    30%  { transform: translate(calc(var(--tx) * 1.4), calc(var(--ty) * 0.6)) rotate(calc(var(--spin) * 0.4)) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), calc(100vh - 140px)) rotate(var(--spin)) scale(0.9); opacity: 1; }
+  }
+  @keyframes minishatter {
+    0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--mtx), var(--mty)) rotate(var(--mspin)) scale(0.15); opacity: 0; }
+  }
 `;
   document.head.appendChild(style);
 
   let idleTimer, raf, floating = false;
   const badges = () => [...document.querySelectorAll(".badge:not(.sub)")];
-  
 
   function makeShards(b) {
-  const r = b.getBoundingClientRect();
-  const face = getComputedStyle(b).backgroundImage;
-  const ty = Math.sin(ang) * dist * 0.4;
-  for (let i = 0; i < 8; i++) {
-    const s = document.createElement("div");
-    const ang = (i / 8) * Math.PI * 2;
-    const dist = 40 + Math.random() * 70;
-    const tx = Math.cos(ang) * dist;
-    const bgX = (Math.random() - 0.5) * r.width * 0.8;
-    const bgY = (Math.random() - 0.5) * r.height * 0.8;
-    const spin = (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 160);
-    s.style.cssText = `
-      position:fixed;
-      left:${r.left + r.width / 2 - 16}px;
-      top:${r.top + r.height / 2 - 16}px;
-      width:32px; height:32px;
-      background:${face};
-      background-size:${r.width}px ${r.height}px;
-      background-position:${bgX}px ${bgY}px;
-      border-radius:18%;
-      pointer-events:none; z-index:21;
-      animation: shardfall 2.2s ease-in forwards;
-      --tx:${tx}px; --ty:${ty}px; --spin:${spin}deg;
-    `;
-    document.body.appendChild(s);
-    s.addEventListener("animationend", () => {
-      for (let j = 0; j < 3; j++) {
-        const mini = document.createElement("div");
-        const mAng = Math.random() * Math.PI * 2;
-        const mDist = 12 + Math.random() * 24;
-        const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
-        mini.style.cssText = `
-          position:fixed;
-          left:${s.getBoundingClientRect().left}px;
-          top:${s.getBoundingClientRect().top}px;
-          width:14px; height:14px;
-          background:${face};
-          background-size:${r.width}px ${r.height}px;
-          background-position:${bgX + (Math.random()-0.5)*20}px ${bgY + (Math.random()-0.5)*20}px;
-          border-radius:30%;
-          pointer-events:none; z-index:22;
-          animation: shardfall 2.6s ease-in forwards;
-          --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 10}px;
-        `;
-        document.body.appendChild(mini);
-        setTimeout(() => mini.remove(), 800);
-      }
-      s.remove();
-    });
+    const r = b.getBoundingClientRect();
+    const face = getComputedStyle(b).backgroundImage;
+    for (let i = 0; i < 8; i++) {
+      const s = document.createElement("div");
+      const ang = (i / 8) * Math.PI * 2;
+      const dist = 40 + Math.random() * 70;
+      const tx = Math.cos(ang) * dist;
+      const ty = Math.sin(ang) * dist * 0.4;
+      const bgX = (Math.random() - 0.5) * r.width * 0.8;
+      const bgY = (Math.random() - 0.5) * r.height * 0.8;
+      const spin = (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 160);
+      s.style.cssText = `
+        position:fixed;
+        left:${r.left + r.width / 2 - 16}px;
+        top:${r.top + r.height / 2 - 16}px;
+        width:32px; height:32px;
+        background:${face};
+        background-size:${r.width}px ${r.height}px;
+        background-position:${bgX}px ${bgY}px;
+        border-radius:18%;
+        pointer-events:none; z-index:21;
+        animation: shardfall 2.6s ease-in forwards;
+        --tx:${tx}px; --ty:${ty}px; --spin:${spin}deg;
+      `;
+      document.body.appendChild(s);
+      s.addEventListener("animationend", () => {
+        for (let j = 0; j < 3; j++) {
+          const mini = document.createElement("div");
+          const mAng = Math.random() * Math.PI * 2;
+          const mDist = 12 + Math.random() * 24;
+          const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
+          mini.style.cssText = `
+            position:fixed;
+            left:${s.getBoundingClientRect().left}px;
+            top:${s.getBoundingClientRect().top}px;
+            width:14px; height:14px;
+            background:${face};
+            background-size:${r.width}px ${r.height}px;
+            background-position:${bgX + (Math.random()-0.5)*20}px ${bgY + (Math.random()-0.5)*20}px;
+            border-radius:30%;
+            pointer-events:none; z-index:22;
+            animation: minishatter 0.9s ease-out forwards;
+            --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 15}px; --mspin:${mSpin}deg;
+          `;
+          document.body.appendChild(mini);
+          setTimeout(() => mini.remove(), 1000);
+        }
+        s.remove();
+      });
+    }
+    b.style.opacity = "0";
   }
-  b.style.opacity = "0";
-}
 
   function resetIdle() {
     clearTimeout(idleTimer);
@@ -167,7 +166,7 @@
       delete b.dataset.speed;
       delete b.dataset.lean;
     });
-    document.querySelectorAll("div[style*='shardfall']").forEach(el => el.remove());
+    document.querySelectorAll("div[style*='shardfall'], div[style*='minishatter']").forEach(el => el.remove());
   }
 
   ["pointermove", "keydown", "wheel", "input"].forEach(ev =>
