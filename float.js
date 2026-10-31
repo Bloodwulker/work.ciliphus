@@ -19,8 +19,7 @@
   }
   @keyframes shardfall {
   0%   { transform: translate(0,0) rotate(0); opacity: 1; }
-  40%  { transform: translate(var(--tx), 20px) rotate(var(--spin)); opacity: 1; }
-  100% { transform: translate(var(--tx), calc(100vh - 40px)) rotate(calc(var(--spin) * 1.4)); opacity: 1; }
+  100% { transform: translate(var(--tx), calc(100vh - 120px)) rotate(var(--spin)); opacity: 1; }
 }
 @keyframes minishatter {
   0%   { transform: translate(0,0) scale(1); opacity: 1; }
@@ -72,7 +71,7 @@
           background-position:${bgX + (Math.random()-0.5)*20}px ${bgY + (Math.random()-0.5)*20}px;
           border-radius:30%;
           pointer-events:none; z-index:22;
-          animation: minishatter 0.7s ease-out forwards;
+          animation: shardfall 2.6s ease-in forwards;
           --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 10}px;
         `;
         document.body.appendChild(mini);
