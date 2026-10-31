@@ -18,22 +18,25 @@
     100% { transform: translate(-50%,-50%) translate(0,0); }
   }
   @keyframes shardfall {
-  0%   { transform: translate(0,0) rotate(0); opacity: 1; }
-  100% { transform: translate(var(--tx), calc(100vh - 120px)) rotate(var(--spin)); opacity: 1; }
+  0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
+  30%  { transform: translate(calc(var(--tx) * 1.4), calc(var(--ty) * 0.6)) rotate(calc(var(--spin) * 0.4)) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), calc(100vh - 140px)) rotate(var(--spin)) scale(0.9); opacity: 1; }
 }
 @keyframes minishatter {
-  0%   { transform: translate(0,0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--mtx), var(--mty)) scale(0.2); opacity: 0; }
+  0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--mtx), var(--mty)) rotate(var(--mspin)) scale(0.15); opacity: 0; }
 }
 `;
   document.head.appendChild(style);
 
   let idleTimer, raf, floating = false;
   const badges = () => [...document.querySelectorAll(".badge:not(.sub)")];
+  
 
   function makeShards(b) {
   const r = b.getBoundingClientRect();
   const face = getComputedStyle(b).backgroundImage;
+  const ty = Math.sin(ang) * dist * 0.4;
   for (let i = 0; i < 8; i++) {
     const s = document.createElement("div");
     const ang = (i / 8) * Math.PI * 2;
@@ -53,7 +56,7 @@
       border-radius:18%;
       pointer-events:none; z-index:21;
       animation: shardfall 2.2s ease-in forwards;
-      --tx:${tx}px; --spin:${spin}deg;
+      --tx:${tx}px; --ty:${ty}px; --spin:${spin}deg;
     `;
     document.body.appendChild(s);
     s.addEventListener("animationend", () => {
@@ -61,6 +64,7 @@
         const mini = document.createElement("div");
         const mAng = Math.random() * Math.PI * 2;
         const mDist = 12 + Math.random() * 24;
+        const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
         mini.style.cssText = `
           position:fixed;
           left:${s.getBoundingClientRect().left}px;
