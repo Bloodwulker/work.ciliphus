@@ -46,30 +46,32 @@
   document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
 
   spots.forEach(({ b, x, y }) => {
-    b.dataset.x = x;
-    b.dataset.y = y;
-    b.style.left = x + "px";
-    b.style.top  = y + "px";
-    b.style.transform = "translate(-50%,-50%)";
-  });
+  b.dataset.x = x;
+  b.dataset.y = y;
+  b.dataset.speed = 14 + Math.random() * 28;   // 14–42 px/s
+  b.style.left = x + "px";
+  b.style.top  = y + "px";
+  b.style.transform = "translate(-50%,-50%)";
+});
 
-  let last = performance.now();
-  function tick(now) {
-    if (!floating) return;
-    const dt = (now - last) / 1000;
-    last = now;
-    badges().forEach(b => {
-      if (b.classList.contains("melting")) return;
-      let y = parseFloat(b.dataset.y) - SPEED * dt;
-      b.dataset.y = y;
-      b.style.top = y + "px";
-      if (y < 40) {
-        b.classList.add("melting");
-        b.style.animation = "rumble 0.12s linear 4, melt 1.4s ease-in 0.5s forwards";
-      }
-    });
-    raf = requestAnimationFrame(tick);
-  }
+let last = performance.now();
+function tick(now) {
+  if (!floating) return;
+  const dt = (now - last) / 1000;
+  last = now;
+  badges().forEach(b => {
+    if (b.classList.contains("melting")) return;
+    const speed = parseFloat(b.dataset.speed);
+    let y = parseFloat(b.dataset.y) - speed * dt;
+    b.dataset.y = y;
+    b.style.top = y + "px";
+    const half = b.offsetHeight / 2;
+    if (y - half <= 4) {                        // top edge hits top
+      b.classList.add("melting");
+      b.style.top = half + "px";                // pin the top edge
+      b.style.animation = "rumble 0.12s linear 4, melt 1.4s ease-in 0.48s forwards";
+    }
+  });
   raf = requestAnimationFrame(tick);
 }
 
