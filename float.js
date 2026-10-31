@@ -19,7 +19,12 @@
   }
   @keyframes shardfall {
   0%   { transform: translate(0,0) rotate(0); opacity: 1; }
-  100% { transform: translate(var(--tx), var(--ty)) rotate(var(--spin)) scale(0.3); opacity: 0; }
+  40%  { transform: translate(var(--tx), 20px) rotate(var(--spin)); opacity: 1; }
+  100% { transform: translate(var(--tx), calc(100vh - 40px)) rotate(calc(var(--spin) * 1.4)); opacity: 1; }
+}
+@keyframes minishatter {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--mtx), var(--mty)) scale(0.2); opacity: 0; }
 }
 `;
   document.head.appendChild(style);
@@ -33,12 +38,11 @@
   for (let i = 0; i < 8; i++) {
     const s = document.createElement("div");
     const ang = (i / 8) * Math.PI * 2;
-    const dist = 50 + Math.random() * 90;
+    const dist = 40 + Math.random() * 70;
     const tx = Math.cos(ang) * dist;
-    const ty = Math.sin(ang) * dist + 60;
     const bgX = (Math.random() - 0.5) * r.width * 0.8;
     const bgY = (Math.random() - 0.5) * r.height * 0.8;
-    const spin = (Math.random() > 0.5 ? 1 : -1) * (120 + Math.random() * 200);
+    const spin = (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 160);
     s.style.cssText = `
       position:fixed;
       left:${r.left + r.width / 2 - 16}px;
@@ -49,11 +53,33 @@
       background-position:${bgX}px ${bgY}px;
       border-radius:18%;
       pointer-events:none; z-index:21;
-      animation: shardfall 1.8s ease-out forwards;
-      --tx:${tx}px; --ty:${ty}px; --spin:${spin}deg;
+      animation: shardfall 2.2s ease-in forwards;
+      --tx:${tx}px; --spin:${spin}deg;
     `;
     document.body.appendChild(s);
-    setTimeout(() => s.remove(), 2000);
+    s.addEventListener("animationend", () => {
+      for (let j = 0; j < 3; j++) {
+        const mini = document.createElement("div");
+        const mAng = Math.random() * Math.PI * 2;
+        const mDist = 12 + Math.random() * 24;
+        mini.style.cssText = `
+          position:fixed;
+          left:${s.getBoundingClientRect().left}px;
+          top:${s.getBoundingClientRect().top}px;
+          width:14px; height:14px;
+          background:${face};
+          background-size:${r.width}px ${r.height}px;
+          background-position:${bgX + (Math.random()-0.5)*20}px ${bgY + (Math.random()-0.5)*20}px;
+          border-radius:30%;
+          pointer-events:none; z-index:22;
+          animation: minishatter 0.7s ease-out forwards;
+          --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 10}px;
+        `;
+        document.body.appendChild(mini);
+        setTimeout(() => mini.remove(), 800);
+      }
+      s.remove();
+    });
   }
   b.style.opacity = "0";
 }
