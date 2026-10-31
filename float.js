@@ -18,10 +18,10 @@
     100% { transform: translate(-50%,-50%) translate(0,0); }
   }
   @keyframes shardfall {
-    0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
-    30%  { transform: translate(calc(var(--tx) * 1.4), calc(var(--ty) * 0.6)) rotate(calc(var(--spin) * 0.4)) scale(1); opacity: 1; }
-    100% { transform: translate(var(--tx), calc(100vh - 140px)) rotate(var(--spin)) scale(0.9); opacity: 1; }
-  }
+  0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
+  25%  { transform: translate(calc(var(--tx) * 1.8), calc(var(--ty) * 1.2)) rotate(calc(var(--spin) * 0.5)) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), calc(100vh - 140px)) rotate(var(--spin)) scale(0.85); opacity: 1; }
+}
   @keyframes minishatter {
     0%   { transform: translate(0,0) rotate(0) scale(1); opacity: 1; }
     100% { transform: translate(var(--mtx), var(--mty)) rotate(var(--mspin)) scale(0.15); opacity: 0; }
@@ -40,9 +40,9 @@
   for (let i = 0; i < count; i++) {
     const s = document.createElement("div");
     const ang = Math.random() * Math.PI * 2;
-    const dist = (30 + Math.random() * 90) * power;
+    const dist = (60 + Math.random() * 140) * power;
     const tx = Math.cos(ang) * dist;
-    const ty = Math.sin(ang) * dist * 0.35;
+    const ty = (Math.sin(ang) * dist * 0.5) - 20;
     const size = 22 + Math.random() * 18;
     const bgX = (Math.random() - 0.5) * r.width * 0.9;
     const bgY = (Math.random() - 0.5) * r.height * 0.9;
