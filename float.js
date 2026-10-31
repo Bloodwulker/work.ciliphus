@@ -2,20 +2,27 @@
   const IDLE = 15000;
   const style = document.createElement("style");
   style.textContent = `
-    body.floating .grid { pointer-events: none; }
-    body.floating .badge:not(.sub) {
-      position: fixed !important;
-      margin: 0 !important;
-      transition: none !important;
-      z-index: 20;
-    }
-    body.floating .badge.melting { pointer-events: none; }
-    @keyframes melt {
-      0%   { transform: translate(-50%,-50%) scaleY(1); opacity: 1; filter: none; }
-      30%  { transform: translate(-50%,-50%) scaleY(1.15) scaleX(0.9); }
-      100% { transform: translate(-50%, 40vh) scaleY(0.05) scaleX(1.4); opacity: 0; filter: blur(6px); }
-    }
-  `;
+  body.floating .grid { pointer-events: none; }
+  body.floating .badge:not(.sub) {
+    position: fixed !important;
+    margin: 0 !important;
+    transition: none !important;
+    z-index: 20;
+  }
+  body.floating .badge.melting { pointer-events: none; }
+  @keyframes melt {
+    0%   { transform: translate(-50%,-50%) scaleY(1); opacity: 1; filter: none; }
+    30%  { transform: translate(-50%,-50%) scaleY(1.15) scaleX(0.9); }
+    100% { transform: translate(-50%, 40vh) scaleY(0.05) scaleX(1.4); opacity: 0; filter: blur(6px); }
+  }
+  @keyframes float-rumble {
+    0%   { transform: translate(-50%,-50%) translate(0,0); }
+    25%  { transform: translate(-50%,-50%) translate(-2px,1px); }
+    50%  { transform: translate(-50%,-50%) translate(2px,-1px); }
+    75%  { transform: translate(-50%,-50%) translate(-1px,-1px); }
+    100% { transform: translate(-50%,-50%) translate(0,0); }
+  }
+`;
   document.head.appendChild(style);
 
   let idleTimer, raf, floating = false;
@@ -64,7 +71,7 @@
         if (y - half <= 4) {
           b.classList.add("melting");
           b.style.top = half + "px";
-          b.style.animation = "rumble 0.12s linear 4, melt 1.4s ease-in 0.48s forwards";
+          b.style.animation = "float-rumble 0.12s linear 4, melt 1.4s ease-in 0.48s forwards";
         }
       });
       raf = requestAnimationFrame(tick);
