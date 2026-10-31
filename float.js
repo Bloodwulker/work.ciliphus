@@ -144,23 +144,27 @@ function makeShards(b) {
         b.style.top  = y + "px";
         const half = b.offsetHeight / 2;
         if (y - half <= 4) {
-          b.classList.add("melting");
-          b.style.top = half + "px";
-          const styles = ["drip", "shrink", "burst", "shatter", "smoke"];
-          const pick = styles[Math.floor(Math.random() * styles.length)];
-          if (pick === "drip") {
-            makeDrips(b);
-          } else if (pick === "shatter") {
-            makeShards(b);
-          } else {
-            b.style.animation = `float-rumble 0.12s linear 4, ${pick} 1.6s ease-in 0.48s forwards`;
-          }
-        }
-      });
-      raf = requestAnimationFrame(tick);
-    }
-    raf = requestAnimationFrame(tick);
+  b.classList.add("melting");
+  b.style.top = half + "px";
+  const styles = ["drip", "shrink", "burst", "shatter", "smoke"];
+  const pick = styles[Math.floor(Math.random() * styles.length)];
+  if (pick === "drip") {
+    makeDrips(b);
+  } else if (pick === "shatter") {
+    makeShards(b);
+  } else {
+    b.style.animation = `float-rumble 0.12s linear 4, ${pick} 1.6s ease-in 0.48s forwards`;
   }
+  setTimeout(() => {
+    if (!floating) return;
+    b.classList.remove("melting");
+    b.style.animation = "";
+    b.style.opacity = "";
+    const newY = innerHeight + b.offsetHeight;
+    b.dataset.y = newY;
+    b.style.top = newY + "px";
+  }, 1700);
+}
 
   function stop() {
     floating = false;
