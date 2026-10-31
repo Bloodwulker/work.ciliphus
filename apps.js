@@ -136,8 +136,11 @@ finder.addEventListener("input", () => {
   });
 }
   clearTimeout(finderIdle);
-  if (!q) finderIdle = setTimeout(() => finder.blur(), 5000);
-});
+finderIdle = setTimeout(() => {
+  finder.value = "";
+  finder.dispatchEvent(new Event("input"));
+  finder.blur();
+}, 10000);
 finder.addEventListener("focus", () => {
   clearTimeout(finderIdle);
   if (!finder.value.trim()) finderIdle = setTimeout(() => finder.blur(), 5000);
