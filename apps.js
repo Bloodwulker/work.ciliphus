@@ -117,9 +117,10 @@ let finderIdle;
 finder.addEventListener("input", () => {
   const q = finder.value.trim().toLowerCase();
   document.querySelectorAll(".badge").forEach(b => {
-    const name = (b.title || "").toLowerCase();
-    b.classList.toggle("hidden", q && !name.includes(q));
-  });
+  if (b.closest(".fan")) return;
+  const name = (b.title || "").toLowerCase();
+  b.classList.toggle("hidden", q && !name.includes(q));
+});
   document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
   document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
   if (q) {
