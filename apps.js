@@ -122,20 +122,19 @@ finder.addEventListener("input", () => {
   document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
   document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
   if (q) {
-    const hit = [...document.querySelectorAll(".badge[data-fan]")].find(b =>
-      (b.title || "").toLowerCase().includes(q) && !b.classList.contains("hidden")
-    );
-    if (hit) {
-      const fan = document.getElementById(hit.dataset.fan);
+  document.querySelectorAll(".badge[data-fan]").forEach(b => {
+    if ((b.title || "").toLowerCase().includes(q) && !b.classList.contains("hidden")) {
+      const fan = document.getElementById(b.dataset.fan);
       if (fan) {
-        const r = hit.getBoundingClientRect();
+        const r = b.getBoundingClientRect();
         fan.style.left = (r.left + r.width / 2 - 50) + "px";
         fan.style.top  = (r.top  + r.height / 2 - 50) + "px";
         fan.classList.add("open");
-        hit.classList.add("lit");
+        b.classList.add("lit");
       }
     }
-  }
+  });
+}
   clearTimeout(finderIdle);
   if (!q) finderIdle = setTimeout(() => finder.blur(), 5000);
 });
