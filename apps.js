@@ -2,7 +2,7 @@
 const APPS = [
   { name: "ConnectWise Manage", face: "cwm.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI0ECL30JK35H6X6GSKV/sso" },
   { name: "Automate", face: "cwa.png", fan: "automate" },
-  { name: "Automate", face: "cantey.png", fan: "cantey" },
+  { name: "Cantey", face: "cantey.png", fan: "cantey" },
   { name: "ITGlue", face: "itg.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIUXAZJSYT1PAVZIDAK0/sso" },
   { name: "Strety", face: "strety.png", href: "https://2.strety.com/" },
   { name: "Token Generator", face: "tokengen.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI47L3HZ1VJ5A0USOW3I/sso" },
