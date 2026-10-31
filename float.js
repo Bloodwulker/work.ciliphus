@@ -80,6 +80,8 @@
       alive = true;
       p.vy += 420 * dt;
       p.x += p.vx * dt;
+      if (p.x < 0) { p.x = 0; p.vx = Math.abs(p.vx) * 0.7; }
+      if (p.x + p.size > innerWidth) { p.x = innerWidth - p.size; p.vx = -Math.abs(p.vx) * 0.7; }
       p.y += p.vy * dt;
       p.rot += p.spin * dt;
       p.el.style.left = p.x + "px";
