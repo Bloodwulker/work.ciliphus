@@ -145,13 +145,13 @@
     const dx = mp.x - other.x;
     const dy = mp.y - other.y;
     const dist = Math.hypot(dx, dy);
-    if (dist < 14 && dist > 0) {
-      const push = (14 - dist) / dist * 0.35;
+    if (dist < 15 && dist > 0) {
+      const push = (15 - dist) / dist * 0.3;
       mp.x += dx * push;
       mp.y += dy * push;
-      mp.vy *= 0.92;
-      mp.vx *= 0.92;
-      if (dy < 0) supported = true;
+      mp.vy *= 0.94;
+      mp.vx *= 0.94;
+      if (dy < 4) supported = true;
     }
   }
 
@@ -166,7 +166,7 @@
       mp.settled = true;
       mp.spin = 0;
     }
-  } else if (supported && Math.abs(mp.vy) < 20 && Math.abs(mp.vx) < 20) {
+  } else if (Math.abs(mp.vy) < 35 && Math.abs(mp.vx) < 35 && (supported || mp.y > innerHeight - 120)) {
     mp.vy = 0;
     mp.vx *= 0.1;
     mp.settled = true;
