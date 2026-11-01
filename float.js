@@ -24,6 +24,19 @@
   let idleTimer, raf, floating = false;
   const badges = () => [...document.querySelectorAll(".badge:not(.sub)")];
 
+  function removePiece(mp) {
+    const i = rubble.indexOf(mp);
+    if (i > -1) rubble.splice(i, 1);
+    if (mp.el) mp.el.remove();
+    rubble.forEach(other => {
+      if (other.settled && Math.abs(other.x - mp.x) < 16 && other.y < mp.y) {
+        other.settled = false;
+        other.bounces = 1;
+        other.vy = 40;
+      }
+    });
+  }
+
   function makeShards(b) {
     const r = b.getBoundingClientRect();
     const face = getComputedStyle(b).backgroundImage;
@@ -111,7 +124,7 @@
             rubble.push(mp);
             while (rubble.length > RUBBLE_CAP) {
               const old = rubble.shift();
-              if (old && old.el) old.el.remove();
+              if (old) removePiece(old);
             }
             let mLast = performance.now();
             function mTick(now) {
@@ -122,12 +135,21 @@
                 mp.x += mp.vx * dt;
                 mp.y += mp.vy * dt;
                 mp.rot += mp.spin * dt;
-                if (mp.y > innerHeight - 50 && mp.bounces < 2) {
-                  mp.y = innerHeight - 50;
+
+                let ground = innerHeight - 50;
+                for (const other of rubble) {
+                  if (other === mp || !other.settled) continue;
+                  if (Math.abs(other.x - mp.x) < 16) {
+                    ground = Math.min(ground, other.y - 14);
+                  }
+                }
+
+                if (mp.y > ground && mp.bounces < 2) {
+                  mp.y = ground;
                   mp.vy = -mp.vy * 0.65;
                   mp.bounces++;
-                } else if (mp.y > innerHeight - 50 && mp.bounces >= 2) {
-                  mp.y = innerHeight - 50;
+                } else if (mp.y > ground && mp.bounces >= 2) {
+                  mp.y = ground;
                   mp.vy = 0;
                   mp.vx *= 0.3;
                   mp.settled = true;
@@ -140,9 +162,7 @@
               mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
               if (mp.life > 0) requestAnimationFrame(mTick);
               else {
-                const i = rubble.indexOf(mp);
-                if (i > -1) rubble.splice(i, 1);
-                mp.el.remove();
+                removePiece(mp);
               }
             }
             requestAnimationFrame(mTick);
