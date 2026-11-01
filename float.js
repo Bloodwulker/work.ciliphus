@@ -23,6 +23,7 @@
 `;
   document.head.appendChild(style);
   let idleTimer, raf, floating = false;
+  let gen = 0;
   const badges = () => [...document.querySelectorAll(".badge:not(.sub)")];
 
   function removePiece(mp) {
@@ -39,6 +40,7 @@
   }
 
   function makeShards(b) {
+    const myGen = gen;
     const r = b.getBoundingClientRect();
     const face = getComputedStyle(b).backgroundImage;
     const count = 6 + Math.floor(Math.random() * 5);
@@ -80,6 +82,7 @@
 
     let last = performance.now();
     function tick(now) {
+      if (gen !== myGen) return;
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
       let alive = false;
@@ -130,6 +133,7 @@
             }
             let mLast = performance.now();
             function mTick(now) {
+              if (gen !== myGen) return;
               const dt = Math.min((now - mLast) / 1000, 0.05);
               mLast = now;
               if (!mp.settled) {
@@ -259,6 +263,7 @@
 
   function stop() {
     floating = false;
+    gen++;
     cancelAnimationFrame(raf);
     document.body.classList.remove("floating");
     badges().forEach(b => {
