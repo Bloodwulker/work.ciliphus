@@ -90,60 +90,70 @@
       if (p.y > innerHeight - 60) {
         p.done = true;
         for (let j = 0; j < 3; j++) {
-          const mini = document.createElement("div");
-          const mAng = Math.random() * Math.PI * 2;
-          mini.style.cssText = `
-            position:fixed;
-            left:${p.x}px;
-            top:${p.y}px;
-            width:14px; height:14px;
-            background:${p.face};
-            background-size:${r.width}px ${r.height}px;
-            background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
-            border-radius:30%;
-            pointer-events:none; z-index:22;
-          `;
-          document.body.appendChild(mini);
-          const mp = {
-            el: mini,
-            x: p.x,
-            y: p.y,
-            vx: Math.cos(mAng) * (40 + Math.random() * 60),
-            vy: -180 - Math.random() * 100,
-            life: 1.2,
-            spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
-            rot: 0,
-            bounces: 0
-          };
-          let mLast = performance.now();
-          function mTick(now) {
-            const dt = Math.min((now - mLast) / 1000, 0.05);
-            mLast = now;
-            mp.vy += 600 * dt;
-            mp.x += mp.vx * dt;
-            mp.y += mp.vy * dt;
-            mp.rot += mp.spin * dt;
-            if (mp.y > innerHeight - 50 && mp.bounces < 2) {
-              mp.y = innerHeight - 50;
-              mp.vy = -mp.vy * 0.65;
-              mp.bounces++;
-            }
-            mp.life -= dt * 0.6;
-            mp.el.style.left = mp.x + "px";
-            mp.el.style.top = mp.y + "px";
-            mp.el.style.transform = `rotate(${mp.rot}deg)`;
-            mp.el.style.opacity = Math.max(0, mp.life);
-            if (mp.life > 0) requestAnimationFrame(mTick);
-            else mp.el.remove();
-          }
-          requestAnimationFrame(mTick);
-        }
-        p.el.remove();
-      }
-    });
-    if (alive) requestAnimationFrame(tick);
+  const mini = document.createElement("div");
+  const mAng = Math.random() * Math.PI * 2;
+  mini.style.cssText = `
+    position:fixed;
+    left:${p.x}px;
+    top:${p.y}px;
+    width:14px; height:14px;
+    background:${p.face};
+    background-size:${r.width}px ${r.height}px;
+    background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
+    border-radius:30%;
+    pointer-events:none; z-index:22;
+  `;
+  document.body.appendChild(mini);
+  const mp = {
+    el: mini,
+    x: p.x,
+    y: p.y,
+    vx: Math.cos(mAng) * (40 + Math.random() * 60),
+    vy: -180 - Math.random() * 100,
+    life: 8,
+    spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
+    rot: 0,
+    bounces: 0,
+    settled: false
+  };
+  rubble.push(mp);
+  while (rubble.length > RUBBLE_CAP) {
+    const old = rubble.shift();
+    if (old && old.el) old.el.remove();
   }
-  requestAnimationFrame(tick);
+  let mLast = performance.now();
+  function mTick(now) {
+    const dt = Math.min((now - mLast) / 1000, 0.05);
+    mLast = now;
+    if (!mp.settled) {
+      mp.vy += 600 * dt;
+      mp.x += mp.vx * dt;
+      mp.y += mp.vy * dt;
+      mp.rot += mp.spin * dt;
+      if (mp.y > innerHeight - 50 && mp.bounces < 2) {
+        mp.y = innerHeight - 50;
+        mp.vy = -mp.vy * 0.65;
+        mp.bounces++;
+      } else if (mp.y > innerHeight - 50 && mp.bounces >= 2) {
+        mp.y = innerHeight - 50;
+        mp.vy = 0;
+        mp.vx *= 0.3;
+        mp.settled = true;
+      }
+    }
+    mp.life -= dt * 0.12;
+    mp.el.style.left = mp.x + "px";
+    mp.el.style.top = mp.y + "px";
+    mp.el.style.transform = `rotate(${mp.rot}deg)`;
+    mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
+    if (mp.life > 0) requestAnimationFrame(mTick);
+    else {
+      const i = rubble.indexOf(mp);
+      if (i > -1) rubble.splice(i, 1);
+      mp.el.remove();
+    }
+  }
+  requestAnimationFrame(mTick);
 }
 
   function resetIdle() {
