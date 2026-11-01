@@ -101,106 +101,68 @@
         if (p.y > innerHeight - 60) {
           p.done = true;
           for (let j = 0; j < 3; j++) {
-            const mini = document.createElement("div");
-            const mAng = Math.random() * Math.PI * 2;
-            mini.style.cssText = `
-              position:fixed;
-              left:${p.x}px;
-              top:${p.y}px;
-              width:14px; height:14px;
-              background:${p.face};
-              background-size:${r.width}px ${r.height}px;
-              background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
-              border-radius:30%;
-              pointer-events:none; z-index:22;
-            `;
-            document.body.appendChild(mini);
-            const mp = {
-              el: mini,
-              x: p.x,
-              y: p.y,
-              vx: Math.cos(mAng) * (40 + Math.random() * 60),
-              vy: -180 - Math.random() * 100,
-              life: 8,
-              spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
-              rot: 0,
-              settled: false
-            };
-            rubble.push(mp);
-            while (rubble.length > RUBBLE_CAP) {
-              const old = rubble.shift();
-              if (old) removePiece(old);
-            }
-            let mLast = performance.now();
-            function mTick(now) {
-  if (gen !== myGen) return;
-  const dt = Math.min((now - mLast) / 1000, 0.05);
-  mLast = now;
-  if (!mp.settled) {
+  const mini = document.createElement("div");
+  const mAng = Math.random() * Math.PI * 2;
+  mini.style.cssText = `
+    position:fixed;
+    left:${p.x}px;
+    top:${p.y}px;
+    width:14px; height:14px;
+    background:${p.face};
+    background-size:${r.width}px ${r.height}px;
+    background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
+    border-radius:30%;
+    pointer-events:none; z-index:22;
+  `;
+  document.body.appendChild(mini);
+  const mp = {
+    el: mini,
+    x: p.x,
+    y: p.y,
+    vx: Math.cos(mAng) * (40 + Math.random() * 60),
+    vy: -180 - Math.random() * 100,
+    life: 8,
+    spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
+    rot: 0
+  };
+  rubble.push(mp);
+  while (rubble.length > RUBBLE_CAP) {
+    const old = rubble.shift();
+    if (old && old.el) old.el.remove();
+  }
+  let mLast = performance.now();
+  function mTick(now) {
+    if (gen !== myGen) return;
+    const dt = Math.min((now - mLast) / 1000, 0.05);
+    mLast = now;
     mp.vy += 700 * dt;
-    mp.vx *= 0.998;
+    mp.vx *= 0.995;
     mp.x += mp.vx * dt;
     mp.y += mp.vy * dt;
     mp.rot += mp.spin * dt;
-
-    let supported = false;
-    for (const other of rubble) {
-      if (other === mp || !other.settled) continue;
-      const dx = mp.x - other.x;
-      const dy = mp.y - other.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 11 && dist > 0) {
-        const push = (11 - dist) / dist * 0.4;
-        mp.x += dx * push;
-        mp.y += dy * push;
-        mp.vy *= 0.94;
-        mp.vx *= 0.94;
-        if (dy < 4) supported = true;
-      }
-    }
-
-    if (mp.y > innerHeight - 36) {
-      mp.y = innerHeight - 36;
-      if (Math.abs(mp.vy) > 20) {
-        mp.vy *= -0.25;
-        mp.vx *= 0.7;
-      } else {
+    if (mp.y > innerHeight - 30) {
+      mp.y = innerHeight - 30;
+      mp.vy *= -0.4;
+      mp.vx *= 0.7;
+      if (Math.abs(mp.vy) < 30) {
         mp.vy = 0;
-        mp.vx = 0;
-        mp.spin = 0;
-        mp.settled = true;
+        mp.spin *= 0.5;
       }
-    } else if (Math.abs(mp.vy) < 25 && Math.abs(mp.vx) < 25 && (supported || mp.y > innerHeight - 80)) {
-      mp.vy = 0;
-      mp.vx = 0;
-      mp.spin = 0;
-      mp.settled = true;
+    }
+    mp.life -= dt * 0.15;
+    mp.el.style.left = mp.x + "px";
+    mp.el.style.top = mp.y + "px";
+    mp.el.style.transform = `rotate(${mp.rot}deg)`;
+    mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
+    if (mp.life > 0) requestAnimationFrame(mTick);
+    else {
+      const i = rubble.indexOf(mp);
+      if (i > -1) rubble.splice(i, 1);
+      mini.remove();
     }
   }
-  if (mp.settled) {
-    mp.spin = 0;
-    mp.vy = 0;
-    mp.vx = 0;
-  }
-  mp.life -= dt * 0.12;
-  mp.el.style.left = mp.x + "px";
-  mp.el.style.top = mp.y + "px";
-  mp.el.style.transform = `rotate(${mp.rot}deg)`;
-  mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
-  if (mp.life > 0) requestAnimationFrame(mTick);
-  else removePiece(mp);
+  requestAnimationFrame(mTick);
 }
-            requestAnimationFrame(mTick);
-          }
-          p.el.remove();
-          const si = shards.indexOf(p);
-          if (si > -1) shards.splice(si, 1);
-        }
-      });
-      if (alive) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
 
   function resetIdle() {
     clearTimeout(idleTimer);
