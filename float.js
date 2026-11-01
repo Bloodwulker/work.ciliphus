@@ -133,63 +133,63 @@
             }
             let mLast = performance.now();
             function mTick(now) {
-              if (gen !== myGen) return;
-              const dt = Math.min((now - mLast) / 1000, 0.05);
-              mLast = now;
-              if (!mp.settled) {
-                mp.vy += 700 * dt;
-                mp.vx *= 0.998;
-                mp.x += mp.vx * dt;
-                mp.y += mp.vy * dt;
-                mp.rot += mp.spin * dt;
+  if (gen !== myGen) return;
+  const dt = Math.min((now - mLast) / 1000, 0.05);
+  mLast = now;
+  if (!mp.settled) {
+    mp.vy += 700 * dt;
+    mp.vx *= 0.998;
+    mp.x += mp.vx * dt;
+    mp.y += mp.vy * dt;
+    mp.rot += mp.spin * dt;
 
-                let supported = false;
-                for (const other of rubble) {
-                  if (other === mp || !other.settled) continue;
-                  const dx = mp.x - other.x;
-                  const dy = mp.y - other.y;
-                  const dist = Math.hypot(dx, dy);
-                  if (dist < 11 && dist > 0) {
-                    const push = (11 - dist) / dist * 0.4;
-                    mp.x += dx * push;
-                    mp.y += dy * push;
-                    mp.vy *= 0.94;
-                    mp.vx *= 0.94;
-                    if (dy < 4) supported = true;
-                  }
-                }
-if (mp.settled) {
-  mp.spin = 0;
-  mp.vy = 0;
-  mp.vx = 0;
-}
-                if (mp.y > innerHeight - 36) {
- if (mp.y > innerHeight - 36) {
-  mp.y = innerHeight - 36;
-  if (Math.abs(mp.vy) > 20) {
-    mp.vy *= -0.25;
-    mp.vx *= 0.7;
-  } else {
+    let supported = false;
+    for (const other of rubble) {
+      if (other === mp || !other.settled) continue;
+      const dx = mp.x - other.x;
+      const dy = mp.y - other.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 11 && dist > 0) {
+        const push = (11 - dist) / dist * 0.4;
+        mp.x += dx * push;
+        mp.y += dy * push;
+        mp.vy *= 0.94;
+        mp.vx *= 0.94;
+        if (dy < 4) supported = true;
+      }
+    }
+
+    if (mp.y > innerHeight - 36) {
+      mp.y = innerHeight - 36;
+      if (Math.abs(mp.vy) > 20) {
+        mp.vy *= -0.25;
+        mp.vx *= 0.7;
+      } else {
+        mp.vy = 0;
+        mp.vx = 0;
+        mp.spin = 0;
+        mp.settled = true;
+      }
+    } else if (Math.abs(mp.vy) < 25 && Math.abs(mp.vx) < 25 && (supported || mp.y > innerHeight - 80)) {
+      mp.vy = 0;
+      mp.vx = 0;
+      mp.spin = 0;
+      mp.settled = true;
+    }
+  }
+  if (mp.settled) {
+    mp.spin = 0;
     mp.vy = 0;
     mp.vx = 0;
-    mp.spin = 0;
-    mp.settled = true;
   }
-} else if (Math.abs(mp.vy) < 25 && Math.abs(mp.vx) < 25 && (supported || mp.y > innerHeight - 80)) {
-  mp.vy = 0;
-  mp.vx = 0;
-  mp.spin = 0;
-  mp.settled = true;
+  mp.life -= dt * 0.12;
+  mp.el.style.left = mp.x + "px";
+  mp.el.style.top = mp.y + "px";
+  mp.el.style.transform = `rotate(${mp.rot}deg)`;
+  mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
+  if (mp.life > 0) requestAnimationFrame(mTick);
+  else removePiece(mp);
 }
-              }
-              mp.life -= dt * 0.12;
-              mp.el.style.left = mp.x + "px";
-              mp.el.style.top = mp.y + "px";
-              mp.el.style.transform = `rotate(${mp.rot}deg)`;
-              mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
-              if (mp.life > 0) requestAnimationFrame(mTick);
-              else removePiece(mp);
-            }
             requestAnimationFrame(mTick);
           }
           p.el.remove();
