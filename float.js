@@ -158,19 +158,24 @@
                     if (dy < 4) supported = true;
                   }
                 }
-
+if (mp.settled) {
+  mp.spin = 0;
+  mp.vy = 0;
+  mp.vx = 0;
+}
                 if (mp.y > innerHeight - 36) {
+ if (mp.y > innerHeight - 36) {
   mp.y = innerHeight - 36;
-  if (Math.abs(mp.vy) > 30) {
-    mp.vy *= -0.35;
-    mp.vx *= 0.8;
+  if (Math.abs(mp.vy) > 20) {
+    mp.vy *= -0.25;
+    mp.vx *= 0.7;
   } else {
     mp.vy = 0;
     mp.vx = 0;
     mp.spin = 0;
     mp.settled = true;
   }
-} else if (Math.abs(mp.vy) < 40 && Math.abs(mp.vx) < 40 && (supported || mp.y > innerHeight - 100)) {
+} else if (Math.abs(mp.vy) < 25 && Math.abs(mp.vx) < 25 && (supported || mp.y > innerHeight - 80)) {
   mp.vy = 0;
   mp.vx = 0;
   mp.spin = 0;
