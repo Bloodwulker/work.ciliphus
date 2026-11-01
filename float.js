@@ -132,31 +132,37 @@
             function mTick(now) {
               const dt = Math.min((now - mLast) / 1000, 0.05);
               mLast = now;
-              if (!mp.settled) {
+             if (!mp.settled) {
   mp.vy += 700 * dt;
   mp.vx *= 0.998;
   mp.x += mp.vx * dt;
   mp.y += mp.vy * dt;
   mp.rot += mp.spin * dt;
 
-  let ground = innerHeight - 50;
+  // soft push from other settled pieces
   for (const other of rubble) {
     if (other === mp || !other.settled) continue;
-    if (Math.abs(other.x - mp.x) < 13) {
-      ground = Math.min(ground, other.y - 13);
+    const dx = mp.x - other.x;
+    const dy = mp.y - other.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 14 && dist > 0) {
+      const push = (14 - dist) / dist * 0.4;
+      mp.x += dx * push;
+      mp.y += dy * push;
+      mp.vy *= 0.9;
+      mp.vx *= 0.9;
     }
   }
 
-  if (mp.y > ground) {
-    const overlap = mp.y - ground;
-    mp.y -= overlap * 0.6;
-    if (mp.vy > 0) {
-      mp.vy *= -0.4;
-    }
-    if (Math.abs(mp.vy) < 25 && overlap < 4) {
+  // only hard settle on the real floor
+  if (mp.y > innerHeight - 50) {
+    mp.y = innerHeight - 50;
+    if (Math.abs(mp.vy) > 30) {
+      mp.vy *= -0.35;
+      mp.vx *= 0.8;
+    } else {
       mp.vy = 0;
-      mp.vx *= 0.15;
-      mp.y = ground;
+      mp.vx *= 0.1;
       mp.settled = true;
     }
   }
