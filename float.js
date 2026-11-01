@@ -2,6 +2,7 @@
   const IDLE = 15000;
   const style = document.createElement("style");
   const rubble = [];
+  const shards = [];
   const RUBBLE_CAP = 400;
   style.textContent = `
   body.floating .grid { pointer-events: none; }
@@ -61,7 +62,7 @@
         pointer-events:none; z-index:21;
       `;
       document.body.appendChild(s);
-      pieces.push({
+      const piece = {
         el: s,
         x: r.left + r.width / 2 - size / 2,
         y: r.top + r.height / 2 - size / 2,
@@ -71,7 +72,9 @@
         spin: (Math.random() > 0.5 ? 1 : -1) * (120 + Math.random() * 240),
         size, face, bgX, bgY,
         done: false
-      });
+      };
+      pieces.push(piece);
+      shards.push(piece);
     }
     b.style.opacity = "0";
 
@@ -118,7 +121,6 @@
               life: 8,
               spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
               rot: 0,
-              bounces: 0,
               settled: false
             };
             rubble.push(mp);
@@ -131,32 +133,32 @@
               const dt = Math.min((now - mLast) / 1000, 0.05);
               mLast = now;
               if (!mp.settled) {
-  mp.vy += 900 * dt;
-  mp.vx *= 0.995;
-  mp.x += mp.vx * dt;
-  mp.y += mp.vy * dt;
-  mp.rot += mp.spin * dt;
+                mp.vy += 900 * dt;
+                mp.vx *= 0.995;
+                mp.x += mp.vx * dt;
+                mp.y += mp.vy * dt;
+                mp.rot += mp.spin * dt;
 
-  let ground = innerHeight - 50;
-  for (const other of rubble) {
-    if (other === mp || !other.settled) continue;
-    if (Math.abs(other.x - mp.x) < 14) {
-      ground = Math.min(ground, other.y - 13);
-    }
-  }
+                let ground = innerHeight - 50;
+                for (const other of rubble) {
+                  if (other === mp || !other.settled) continue;
+                  if (Math.abs(other.x - mp.x) < 14) {
+                    ground = Math.min(ground, other.y - 13);
+                  }
+                }
 
-  if (mp.y > ground) {
-    mp.y = ground;
-    if (Math.abs(mp.vy) > 40) {
-      mp.vy = -mp.vy * 0.35;
-      mp.vx *= 0.8;
-    } else {
-      mp.vy = 0;
-      mp.vx *= 0.2;
-      mp.settled = true;
-    }
-  }
-}
+                if (mp.y > ground) {
+                  mp.y = ground;
+                  if (Math.abs(mp.vy) > 40) {
+                    mp.vy = -mp.vy * 0.35;
+                    mp.vx *= 0.8;
+                  } else {
+                    mp.vy = 0;
+                    mp.vx *= 0.2;
+                    mp.settled = true;
+                  }
+                }
+              }
               mp.life -= dt * 0.12;
               mp.el.style.left = mp.x + "px";
               mp.el.style.top = mp.y + "px";
@@ -170,6 +172,8 @@
             requestAnimationFrame(mTick);
           }
           p.el.remove();
+          const si = shards.indexOf(p);
+          if (si > -1) shards.splice(si, 1);
         }
       });
       if (alive) requestAnimationFrame(tick);
@@ -253,8 +257,12 @@
       delete b.dataset.speed;
       delete b.dataset.lean;
     });
+    while (shards.length) {
+      const s = shards.pop();
+      if (s && s.el) s.el.remove();
+    }
     while (rubble.length) {
-      const old = rubble.shift();
+      const old = rubble.pop();
       if (old && old.el) old.el.remove();
     }
   }
