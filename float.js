@@ -90,26 +90,26 @@
       if (p.y > innerHeight - 60) {
         p.done = true;
         for (let j = 0; j < 3; j++) {
-          const mini = document.createElement("div");
-          const mAng = Math.random() * Math.PI * 2;
-          const mDist = 12 + Math.random() * 24;
-          const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
-          mini.style.cssText = `
-            position:fixed;
-            left:${p.x}px;
-            top:${p.y}px;
-            width:14px; height:14px;
-            background:${p.face};
-            background-size:${r.width}px ${r.height}px;
-            background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
-            border-radius:30%;
-            pointer-events:none; z-index:22;
-            animation: minishatter 0.9s ease-out forwards;
-            --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 15}px; --mspin:${mSpin}deg;
-          `;
-          document.body.appendChild(mini);
-          setTimeout(() => mini.remove(), 1000);
-        }
+  const mini = document.createElement("div");
+  const mAng = Math.random() * Math.PI * 2;
+  const mDist = 12 + Math.random() * 24;
+  const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
+  mini.style.cssText = `
+    position:fixed;
+    left:${p.x}px;
+    top:${p.y}px;
+    width:14px; height:14px;
+    background:${p.face};
+    background-size:${r.width}px ${r.height}px;
+    background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
+    border-radius:30%;
+    pointer-events:none; z-index:22;
+    animation: minishatter 0.9s ease-out forwards;
+    --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 15}px; --mspin:${mSpin}deg;
+  `;
+  document.body.appendChild(mini);
+  setTimeout(() => mini.remove(), 1000);
+}
         p.el.remove();
       }
     });
