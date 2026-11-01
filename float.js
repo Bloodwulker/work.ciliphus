@@ -109,7 +109,7 @@
             x: p.x,
             y: p.y,
             vx: Math.cos(mAng) * (40 + Math.random() * 60),
-            vy: -120 - Math.random() * 80,
+            vy: -180 - Math.random() * 100,
             life: 1.2,
             spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
             rot: 0,
@@ -125,7 +125,7 @@
             mp.rot += mp.spin * dt;
             if (mp.y > innerHeight - 50 && mp.bounces < 2) {
               mp.y = innerHeight - 50;
-              mp.vy = -mp.vy * 0.5;
+              mp.vy = -mp.vy * 0.65;
               mp.bounces++;
             }
             mp.life -= dt * 0.6;
