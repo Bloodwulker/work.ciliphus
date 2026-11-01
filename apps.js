@@ -6,7 +6,7 @@ const APPS = [
   { name: "Lifecycle", face: "lc.png", fan: "lifecycle" },
   { name: "Egnyte", face: "egnyte.png", fan: "egnyte" },
   { name: "Lucidchart", face: "lucid.png", fan: "lucid" },
-  { name: "Cisco", face: "cisco.png", fan: "cisco" },
+  { name: "Cisco", face: "cisco.png", fan: "cisco", aliases: ["meraki", "umbrella"] },
   { name: "ITGlue", face: "itg.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIUXAZJSYT1PAVZIDAK0/sso" },
   { name: "Strety", face: "strety.png", href: "https://2.strety.com/" },
   { name: "Token Generator", face: "tokengen.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI47L3HZ1VJ5A0USOW3I/sso" },
@@ -21,7 +21,6 @@ const APPS = [
   { name: "Auvik", face: "auvik.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIIMT115RK1SRQBC83HA/sso" },
   { name: "Axcient", face: "axcient.png", href: "https://partner.axcient.com/" },
   { name: "BrightGauge", face: "brightgauge.png", href: "https://canteytech.brightgauge.co/accounts/login/" },
-  { name: "Cisco Umbrella", face: "umbrella.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIN9UEDMZTDRETTKZOJE/sso" },
   { name: "CloudRadial", face: "cloudradial.png", href: "https://portal.canteytech.com/login" },
   { name: "ConnectWise Home", face: "cw-home.png", href: "https://home.connectwise.com/" },
   { name: "Cradlepoint", face: "cradlepoint.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIZMT1XB8785GSO01YQ3/sso" },
@@ -30,7 +29,6 @@ const APPS = [
   { name: "Huntress", face: "huntress.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIMBCLQQ6XFE28FTDPAJ/sso" },
   { name: "Intermedia", face: "intermedia.png", href: "https://canteytech.itglue.com/1203892/passwords/34605054" },
   { name: "Lands End", face: "landsend.png", href: "https://business.landsend.com/store/canteytech" },
-  { name: "Meraki", face: "meraki.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIJR5EYAHGRVFTDMI35O/sso" },
   { name: "Mimecast", face: "mimecast.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIWB6I2RR7K9R8MTGWSH/sso" },
   { name: "MySonicWall", face: "sonicwall.png", href: "https://launcher.myapps.microsoft.com/api/signin/a85a1557-3aa2-4e14-80a4-6e58d7381a20?tenantId=955e181c-1bf1-4ca5-b6e5-717b2cb71269" },
   { name: "N2WS", face: "n2ws.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI1EWV3XKE9HP04MV4HT/sso" },
@@ -53,6 +51,7 @@ APPS.forEach(a => {
   const el = document.createElement(a.fan ? "button" : "a");
   el.className = "badge";
   el.title = a.name;
+  if (a.aliases) el.dataset.aliases = a.aliases.join(" ");
   el.style.setProperty("--face", `url('${BLOB}${a.face}')`);
   if (a.fan) {
     el.dataset.fan = a.fan;
@@ -107,7 +106,7 @@ grid.addEventListener("click", (e) => {
   clicks[badge.title] = (clicks[badge.title] || 0) + 1;
   localStorage.setItem(KEY, JSON.stringify(clicks));
 });
-/* filter badges by name */
+/* filter badges by name or aliases */
 const finder = document.querySelector(".finder");
 let finderIdle;
 finder.addEventListener("input", () => {
@@ -115,13 +114,16 @@ finder.addEventListener("input", () => {
   document.querySelectorAll(".badge").forEach(b => {
     if (b.closest(".fan")) return;
     const name = (b.title || "").toLowerCase();
-    b.classList.toggle("hidden", q && !name.includes(q));
+    const aliases = (b.dataset.aliases || "").toLowerCase();
+    b.classList.toggle("hidden", q && !name.includes(q) && !aliases.includes(q));
   });
   document.querySelectorAll(".fan").forEach(f => f.classList.remove("open"));
   document.querySelectorAll(".badge.lit").forEach(b => b.classList.remove("lit"));
   if (q) {
     document.querySelectorAll(".badge[data-fan]").forEach(b => {
-      if ((b.title || "").toLowerCase().includes(q) && !b.classList.contains("hidden")) {
+      const name = (b.title || "").toLowerCase();
+      const aliases = (b.dataset.aliases || "").toLowerCase();
+      if ((name.includes(q) || aliases.includes(q)) && !b.classList.contains("hidden")) {
         const fan = document.getElementById(b.dataset.fan);
         if (fan) {
           const r = b.getBoundingClientRect();
