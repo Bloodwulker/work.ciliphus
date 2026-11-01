@@ -131,30 +131,32 @@
               const dt = Math.min((now - mLast) / 1000, 0.05);
               mLast = now;
               if (!mp.settled) {
-                mp.vy += 600 * dt;
-                mp.x += mp.vx * dt;
-                mp.y += mp.vy * dt;
-                mp.rot += mp.spin * dt;
+  mp.vy += 900 * dt;
+  mp.vx *= 0.995;
+  mp.x += mp.vx * dt;
+  mp.y += mp.vy * dt;
+  mp.rot += mp.spin * dt;
 
-                let ground = innerHeight - 50;
-                for (const other of rubble) {
-                  if (other === mp || !other.settled) continue;
-                  if (Math.abs(other.x - mp.x) < 16) {
-                    ground = Math.min(ground, other.y - 14);
-                  }
-                }
+  let ground = innerHeight - 50;
+  for (const other of rubble) {
+    if (other === mp || !other.settled) continue;
+    if (Math.abs(other.x - mp.x) < 14) {
+      ground = Math.min(ground, other.y - 13);
+    }
+  }
 
-                if (mp.y > ground && mp.bounces < 2) {
-                  mp.y = ground;
-                  mp.vy = -mp.vy * 0.65;
-                  mp.bounces++;
-                } else if (mp.y > ground && mp.bounces >= 2) {
-                  mp.y = ground;
-                  mp.vy = 0;
-                  mp.vx *= 0.3;
-                  mp.settled = true;
-                }
-              }
+  if (mp.y > ground) {
+    mp.y = ground;
+    if (Math.abs(mp.vy) > 40) {
+      mp.vy = -mp.vy * 0.35;
+      mp.vx *= 0.8;
+    } else {
+      mp.vy = 0;
+      mp.vx *= 0.2;
+      mp.settled = true;
+    }
+  }
+}
               mp.life -= dt * 0.12;
               mp.el.style.left = mp.x + "px";
               mp.el.style.top = mp.y + "px";
