@@ -149,8 +149,8 @@
                   const dx = mp.x - other.x;
                   const dy = mp.y - other.y;
                   const dist = Math.hypot(dx, dy);
-                  if (dist < 15 && dist > 0) {
-                    const push = (15 - dist) / dist * 0.3;
+                  if (dist < 11 && dist > 0) {
+                    const push = (11 - dist) / dist * 0.4;
                     mp.x += dx * push;
                     mp.y += dy * push;
                     mp.vy *= 0.94;
@@ -159,23 +159,23 @@
                   }
                 }
 
-                if (mp.y > innerHeight - 50) {
-                  mp.y = innerHeight - 50;
-                  if (Math.abs(mp.vy) > 30) {
-                    mp.vy *= -0.35;
-                    mp.vx *= 0.8;
-                  } else {
-                    mp.vy = 0;
-                    mp.vx = 0;
-                    mp.spin = 0;
-                    mp.settled = true;
-                  }
-                } else if (Math.abs(mp.vy) < 40 && Math.abs(mp.vx) < 40 && (supported || mp.y > innerHeight - 150)) {
-                  mp.vy = 0;
-                  mp.vx = 0;
-                  mp.spin = 0;
-                  mp.settled = true;
-                }
+                if (mp.y > innerHeight - 36) {
+  mp.y = innerHeight - 36;
+  if (Math.abs(mp.vy) > 30) {
+    mp.vy *= -0.35;
+    mp.vx *= 0.8;
+  } else {
+    mp.vy = 0;
+    mp.vx = 0;
+    mp.spin = 0;
+    mp.settled = true;
+  }
+} else if (Math.abs(mp.vy) < 40 && Math.abs(mp.vx) < 40 && (supported || mp.y > innerHeight - 100)) {
+  mp.vy = 0;
+  mp.vx = 0;
+  mp.spin = 0;
+  mp.settled = true;
+}
               }
               mp.life -= dt * 0.12;
               mp.el.style.left = mp.x + "px";
