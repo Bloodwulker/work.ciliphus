@@ -147,6 +147,14 @@ finder.addEventListener("focus", () => {
   clearTimeout(finderIdle);
   if (!finder.value.trim()) finderIdle = setTimeout(() => finder.blur(), 5000);
 });
+finder.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    e.preventDefault();
+    finder.value = "";
+    finder.dispatchEvent(new Event("input"));
+    finder.blur();
+  }
+});
 document.querySelectorAll(".fan .sub").forEach(el => {
   const face = el.style.getPropertyValue("--face");
   if (face && !face.includes("http")) {
