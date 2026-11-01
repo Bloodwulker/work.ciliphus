@@ -155,24 +155,45 @@
     }
   }
 
-  if (mp.y > innerHeight - 50) {
-    mp.y = innerHeight - 50;
-    if (Math.abs(mp.vy) > 30) {
-      mp.vy *= -0.35;
-      mp.vx *= 0.8;
-    } else {
-      mp.vy = 0;
-      mp.vx *= 0.1;
-      mp.settled = true;
-      mp.spin = 0;
-    }
-  } else if (Math.abs(mp.vy) < 35 && Math.abs(mp.vx) < 35 && (supported || mp.y > innerHeight - 120)) {
+  // inside mTick, after the soft push loop
+if (mp.y > innerHeight - 50) {
+  mp.y = innerHeight - 50;
+  if (Math.abs(mp.vy) > 30) {
+    mp.vy *= -0.35;
+    mp.vx *= 0.8;
+  } else {
     mp.vy = 0;
-    mp.vx *= 0.1;
-    mp.settled = true;
+    mp.vx = 0;
     mp.spin = 0;
+    mp.settled = true;
+  }
+} else if (Math.abs(mp.vy) < 40 && Math.abs(mp.vx) < 40) {
+  // settle if slow, even if not perfectly supported
+  let near = false;
+  for (const other of rubble) {
+    if (other === mp) continue;
+    if (Math.hypot(other.x - mp.x, other.y - mp.y) < 16) { near = true; break; }
+  }
+  if (near || mp.y > innerHeight - 150) {
+    mp.vy = 0;
+    mp.vx = 0;
+    mp.spin = 0;
+    mp.settled = true;
   }
 }
+
+// mouse clear — stop everything immediately
+function clearRubble() {
+  rubble.forEach(mp => {
+    mp.el.remove();
+  });
+  rubble.length = 0;
+}
+
+addEventListener("pointermove", () => {
+  clearRubble();
+  // also stop any active float/explode timers if you have them
+});
               mp.life -= dt * 0.12;
               mp.el.style.left = mp.x + "px";
               mp.el.style.top = mp.y + "px";
