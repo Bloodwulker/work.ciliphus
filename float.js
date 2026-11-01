@@ -92,8 +92,6 @@
         for (let j = 0; j < 3; j++) {
   const mini = document.createElement("div");
   const mAng = Math.random() * Math.PI * 2;
-  const mDist = 12 + Math.random() * 24;
-  const mSpin = (Math.random() > 0.5 ? 1 : -1) * (60 + Math.random() * 140);
   mini.style.cssText = `
     position:fixed;
     left:${p.x}px;
@@ -104,18 +102,41 @@
     background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
     border-radius:30%;
     pointer-events:none; z-index:22;
-    animation: minishatter 0.9s ease-out forwards;
-    --mtx:${Math.cos(mAng)*mDist}px; --mty:${Math.sin(mAng)*mDist - 15}px; --mspin:${mSpin}deg;
   `;
   document.body.appendChild(mini);
-  setTimeout(() => mini.remove(), 1000);
-}
-        p.el.remove();
-      }
-    });
-    if (alive) requestAnimationFrame(tick);
+  const mp = {
+    el: mini,
+    x: p.x,
+    y: p.y,
+    vx: Math.cos(mAng) * (40 + Math.random() * 60),
+    vy: -120 - Math.random() * 80,
+    life: 1.2,
+    spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
+    rot: 0,
+    bounces: 0
+  };
+  let mLast = performance.now();
+  function mTick(now) {
+    const dt = Math.min((now - mLast) / 1000, 0.05);
+    mLast = now;
+    mp.vy += 600 * dt;
+    mp.x += mp.vx * dt;
+    mp.y += mp.vy * dt;
+    mp.rot += mp.spin * dt;
+    if (mp.y > innerHeight - 50 && mp.bounces < 2) {
+      mp.y = innerHeight - 50;
+      mp.vy = -mp.vy * 0.5;
+      mp.bounces++;
+    }
+    mp.life -= dt * 0.6;
+    mp.el.style.left = mp.x + "px";
+    mp.el.style.top = mp.y + "px";
+    mp.el.style.transform = `rotate(${mp.rot}deg)`;
+    mp.el.style.opacity = Math.max(0, mp.life);
+    if (mp.life > 0) requestAnimationFrame(mTick);
+    else mp.el.remove();
   }
-  requestAnimationFrame(tick);
+  requestAnimationFrame(mTick);
 }
 
   function resetIdle() {
