@@ -130,91 +130,58 @@
             }
             let mLast = performance.now();
             function mTick(now) {
-              const dt = Math.min((now - mLast) / 1000, 0.05);
-              mLast = now;
-            if (!mp.settled) {
-  mp.vy += 700 * dt;
-  mp.vx *= 0.998;
-  mp.x += mp.vx * dt;
-  mp.y += mp.vy * dt;
-  mp.rot += mp.spin * dt;
+  const dt = Math.min((now - mLast) / 1000, 0.05);
+  mLast = now;
+  if (!mp.settled) {
+    mp.vy += 700 * dt;
+    mp.vx *= 0.998;
+    mp.x += mp.vx * dt;
+    mp.y += mp.vy * dt;
+    mp.rot += mp.spin * dt;
 
-  let supported = false;
-  for (const other of rubble) {
-    if (other === mp || !other.settled) continue;
-    const dx = mp.x - other.x;
-    const dy = mp.y - other.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist < 15 && dist > 0) {
-      const push = (15 - dist) / dist * 0.3;
-      mp.x += dx * push;
-      mp.y += dy * push;
-      mp.vy *= 0.94;
-      mp.vx *= 0.94;
-      if (dy < 4) supported = true;
+    let supported = false;
+    for (const other of rubble) {
+      if (other === mp || !other.settled) continue;
+      const dx = mp.x - other.x;
+      const dy = mp.y - other.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 15 && dist > 0) {
+        const push = (15 - dist) / dist * 0.3;
+        mp.x += dx * push;
+        mp.y += dy * push;
+        mp.vy *= 0.94;
+        mp.vx *= 0.94;
+        if (dy < 4) supported = true;
+      }
+    }
+
+    if (mp.y > innerHeight - 50) {
+      mp.y = innerHeight - 50;
+      if (Math.abs(mp.vy) > 30) {
+        mp.vy *= -0.35;
+        mp.vx *= 0.8;
+      } else {
+        mp.vy = 0;
+        mp.vx = 0;
+        mp.spin = 0;
+        mp.settled = true;
+      }
+    } else if (Math.abs(mp.vy) < 40 && Math.abs(mp.vx) < 40 && (supported || mp.y > innerHeight - 150)) {
+      mp.vy = 0;
+      mp.vx = 0;
+      mp.spin = 0;
+      mp.settled = true;
     }
   }
-
-  // inside mTick, after the soft push loop
-if (mp.y > innerHeight - 50) {
-  mp.y = innerHeight - 50;
-  if (Math.abs(mp.vy) > 30) {
-    mp.vy *= -0.35;
-    mp.vx *= 0.8;
-  } else {
-    mp.vy = 0;
-    mp.vx = 0;
-    mp.spin = 0;
-    mp.settled = true;
-  }
-} else if (Math.abs(mp.vy) < 40 && Math.abs(mp.vx) < 40) {
-  // settle if slow, even if not perfectly supported
-  let near = false;
-  for (const other of rubble) {
-    if (other === mp) continue;
-    if (Math.hypot(other.x - mp.x, other.y - mp.y) < 16) { near = true; break; }
-  }
-  if (near || mp.y > innerHeight - 150) {
-    mp.vy = 0;
-    mp.vx = 0;
-    mp.spin = 0;
-    mp.settled = true;
-  }
+  mp.life -= dt * 0.12;
+  mp.el.style.left = mp.x + "px";
+  mp.el.style.top = mp.y + "px";
+  mp.el.style.transform = `rotate(${mp.rot}deg)`;
+  mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
+  if (mp.life > 0) requestAnimationFrame(mTick);
+  else removePiece(mp);
 }
-
-// mouse clear — stop everything immediately
-function clearRubble() {
-  rubble.forEach(mp => {
-    mp.el.remove();
-  });
-  rubble.length = 0;
-}
-
-addEventListener("pointermove", () => {
-  clearRubble();
-  // also stop any active float/explode timers if you have them
-});
-              mp.life -= dt * 0.12;
-              mp.el.style.left = mp.x + "px";
-              mp.el.style.top = mp.y + "px";
-              mp.el.style.transform = `rotate(${mp.rot}deg)`;
-              mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
-              if (mp.life > 0) requestAnimationFrame(mTick);
-              else {
-                removePiece(mp);
-              }
-            }
-            requestAnimationFrame(mTick);
-          }
-          p.el.remove();
-          const si = shards.indexOf(p);
-          if (si > -1) shards.splice(si, 1);
-        }
-      });
-      if (alive) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
+requestAnimationFrame(mTick);
 
   function resetIdle() {
     clearTimeout(idleTimer);
