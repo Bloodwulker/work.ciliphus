@@ -133,32 +133,34 @@
               const dt = Math.min((now - mLast) / 1000, 0.05);
               mLast = now;
               if (!mp.settled) {
-                mp.vy += 900 * dt;
-                mp.vx *= 0.995;
-                mp.x += mp.vx * dt;
-                mp.y += mp.vy * dt;
-                mp.rot += mp.spin * dt;
+  mp.vy += 700 * dt;
+  mp.vx *= 0.998;
+  mp.x += mp.vx * dt;
+  mp.y += mp.vy * dt;
+  mp.rot += mp.spin * dt;
 
-                let ground = innerHeight - 50;
-                for (const other of rubble) {
-                  if (other === mp || !other.settled) continue;
-                  if (Math.abs(other.x - mp.x) < 14) {
-                    ground = Math.min(ground, other.y - 13);
-                  }
-                }
+  let ground = innerHeight - 50;
+  for (const other of rubble) {
+    if (other === mp || !other.settled) continue;
+    if (Math.abs(other.x - mp.x) < 13) {
+      ground = Math.min(ground, other.y - 13);
+    }
+  }
 
-                if (mp.y > ground) {
-                  mp.y = ground;
-                  if (Math.abs(mp.vy) > 40) {
-                    mp.vy = -mp.vy * 0.35;
-                    mp.vx *= 0.8;
-                  } else {
-                    mp.vy = 0;
-                    mp.vx *= 0.2;
-                    mp.settled = true;
-                  }
-                }
-              }
+  if (mp.y > ground) {
+    const overlap = mp.y - ground;
+    mp.y -= overlap * 0.6;
+    if (mp.vy > 0) {
+      mp.vy *= -0.4;
+    }
+    if (Math.abs(mp.vy) < 25 && overlap < 4) {
+      mp.vy = 0;
+      mp.vx *= 0.15;
+      mp.y = ground;
+      mp.settled = true;
+    }
+  }
+}
               mp.life -= dt * 0.12;
               mp.el.style.left = mp.x + "px";
               mp.el.style.top = mp.y + "px";
