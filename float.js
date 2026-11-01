@@ -1,6 +1,8 @@
 (() => {
   const IDLE = 15000;
   const style = document.createElement("style");
+  const rubble = [];
+  const RUBBLE_CAP = 40;
   style.textContent = `
   body.floating .grid { pointer-events: none; }
   body.floating .badge:not(.sub) {
