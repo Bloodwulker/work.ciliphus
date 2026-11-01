@@ -24,7 +24,7 @@ const APPS = [
   { name: "Datto", face: "datto.png", href: "https://auth.datto.com/oidc-login/51d0a7fb-5e58-11eb-bf32-fa163e83ce9d" },
   { name: "Duo MSP", face: "duo.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI3YUIS7EFEGJS424PO5/sso" },
   { name: "Egnyte", face: "egnyte.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIL216VL3VOV3R3C40ZY/sso" },
-  { name: "Egnyte Partner", face: "egnyte.png", href: "https://launcher.myapps.microsoft.com/api/signin/3d30a2fb-fce5-4fbb-8a6f-08225fe0520a?tenantId=955e181c-1bf1-4ca5-b6e5-717b2cb71269" },
+  { name: "Egnyte Partner", face: "egnytepp.png", href: "https://launcher.myapps.microsoft.com/api/signin/3d30a2fb-fce5-4fbb-8a6f-08225fe0520a?tenantId=955e181c-1bf1-4ca5-b6e5-717b2cb71269" },
   { name: "Huntress", face: "huntress.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIMBCLQQ6XFE28FTDPAJ/sso" },
   { name: "Intermedia", face: "intermedia.png", href: "https://canteytech.itglue.com/1203892/passwords/34605054" },
   { name: "Lands End", face: "landsend.png", href: "https://business.landsend.com/store/canteytech" },
