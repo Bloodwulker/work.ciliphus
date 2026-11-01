@@ -1,4 +1,12 @@
 /* builds the badge grid from a list. swap the placeholder entries for real ones later. */
+if (e.key === "Escape") {
+  const box = document.querySelector(".gsearch, .ysearch, .ksearch");
+  if (box) {
+    const inp = box.querySelector("input");
+    if (inp) inp.value = "";
+  }
+  close();
+}
 const APPS = [
   { name: "ConnectWise Manage", face: "cwm.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI0ECL30JK35H6X6GSKV/sso" },
   { name: "Automate", face: "cwa.png", fan: "automate" },
