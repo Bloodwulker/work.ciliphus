@@ -6,6 +6,7 @@ const APPS = [
   { name: "Lifecycle", face: "lc.png", fan: "lifecycle" },
   { name: "Egnyte", face: "egnyte.png", fan: "egnyte" },
   { name: "Lucidchart", face: "lucid.png", fan: "lucid" },
+  { name: "Cisco", face: "cisco.png", fan: "cisco" },
   { name: "ITGlue", face: "itg.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DIUXAZJSYT1PAVZIDAK0/sso" },
   { name: "Strety", face: "strety.png", href: "https://2.strety.com/" },
   { name: "Token Generator", face: "tokengen.png", href: "https://sso-8ad12aac.sso.duosecurity.com/saml2/sp/DI47L3HZ1VJ5A0USOW3I/sso" },
