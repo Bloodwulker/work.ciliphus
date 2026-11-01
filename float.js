@@ -26,19 +26,6 @@
   let gen = 0;
   const badges = () => [...document.querySelectorAll(".badge:not(.sub)")];
 
-  function removePiece(mp) {
-    const i = rubble.indexOf(mp);
-    if (i > -1) rubble.splice(i, 1);
-    if (mp.el) mp.el.remove();
-    rubble.forEach(other => {
-      if (other.settled && Math.abs(other.x - mp.x) < 16 && other.y < mp.y) {
-        other.settled = false;
-        other.bounces = 1;
-        other.vy = 40;
-      }
-    });
-  }
-
   function makeShards(b) {
     const myGen = gen;
     const r = b.getBoundingClientRect();
@@ -101,68 +88,77 @@
         if (p.y > innerHeight - 60) {
           p.done = true;
           for (let j = 0; j < 3; j++) {
-  const mini = document.createElement("div");
-  const mAng = Math.random() * Math.PI * 2;
-  mini.style.cssText = `
-    position:fixed;
-    left:${p.x}px;
-    top:${p.y}px;
-    width:14px; height:14px;
-    background:${p.face};
-    background-size:${r.width}px ${r.height}px;
-    background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
-    border-radius:30%;
-    pointer-events:none; z-index:22;
-  `;
-  document.body.appendChild(mini);
-  const mp = {
-    el: mini,
-    x: p.x,
-    y: p.y,
-    vx: Math.cos(mAng) * (40 + Math.random() * 60),
-    vy: -180 - Math.random() * 100,
-    life: 8,
-    spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
-    rot: 0
-  };
-  rubble.push(mp);
-  while (rubble.length > RUBBLE_CAP) {
-    const old = rubble.shift();
-    if (old && old.el) old.el.remove();
-  }
-  let mLast = performance.now();
-  function mTick(now) {
-    if (gen !== myGen) return;
-    const dt = Math.min((now - mLast) / 1000, 0.05);
-    mLast = now;
-    mp.vy += 700 * dt;
-    mp.vx *= 0.995;
-    mp.x += mp.vx * dt;
-    mp.y += mp.vy * dt;
-    mp.rot += mp.spin * dt;
-    if (mp.y > innerHeight - 30) {
-      mp.y = innerHeight - 30;
-      mp.vy *= -0.4;
-      mp.vx *= 0.7;
-      if (Math.abs(mp.vy) < 30) {
-        mp.vy = 0;
-        mp.spin *= 0.5;
-      }
+            const mini = document.createElement("div");
+            const mAng = Math.random() * Math.PI * 2;
+            mini.style.cssText = `
+              position:fixed;
+              left:${p.x}px;
+              top:${p.y}px;
+              width:14px; height:14px;
+              background:${p.face};
+              background-size:${r.width}px ${r.height}px;
+              background-position:${p.bgX + (Math.random()-0.5)*20}px ${p.bgY + (Math.random()-0.5)*20}px;
+              border-radius:30%;
+              pointer-events:none; z-index:22;
+            `;
+            document.body.appendChild(mini);
+            const mp = {
+              el: mini,
+              x: p.x,
+              y: p.y,
+              vx: Math.cos(mAng) * (40 + Math.random() * 60),
+              vy: -180 - Math.random() * 100,
+              life: 8,
+              spin: (Math.random() > 0.5 ? 1 : -1) * (100 + Math.random() * 200),
+              rot: 0
+            };
+            rubble.push(mp);
+            while (rubble.length > RUBBLE_CAP) {
+              const old = rubble.shift();
+              if (old && old.el) old.el.remove();
+            }
+            let mLast = performance.now();
+            function mTick(now) {
+              if (gen !== myGen) return;
+              const dt = Math.min((now - mLast) / 1000, 0.05);
+              mLast = now;
+              mp.vy += 700 * dt;
+              mp.vx *= 0.995;
+              mp.x += mp.vx * dt;
+              mp.y += mp.vy * dt;
+              mp.rot += mp.spin * dt;
+              if (mp.y > innerHeight - 30) {
+                mp.y = innerHeight - 30;
+                mp.vy *= -0.4;
+                mp.vx *= 0.7;
+                if (Math.abs(mp.vy) < 30) {
+                  mp.vy = 0;
+                  mp.spin *= 0.5;
+                }
+              }
+              mp.life -= dt * 0.15;
+              mp.el.style.left = mp.x + "px";
+              mp.el.style.top = mp.y + "px";
+              mp.el.style.transform = `rotate(${mp.rot}deg)`;
+              mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
+              if (mp.life > 0) requestAnimationFrame(mTick);
+              else {
+                const i = rubble.indexOf(mp);
+                if (i > -1) rubble.splice(i, 1);
+                mini.remove();
+              }
+            }
+            requestAnimationFrame(mTick);
+          }
+          p.el.remove();
+          const si = shards.indexOf(p);
+          if (si > -1) shards.splice(si, 1);
+        }
+      });
+      if (alive) requestAnimationFrame(tick);
     }
-    mp.life -= dt * 0.15;
-    mp.el.style.left = mp.x + "px";
-    mp.el.style.top = mp.y + "px";
-    mp.el.style.transform = `rotate(${mp.rot}deg)`;
-    mp.el.style.opacity = Math.max(0, Math.min(1, mp.life));
-    if (mp.life > 0) requestAnimationFrame(mTick);
-    else {
-      const i = rubble.indexOf(mp);
-      if (i > -1) rubble.splice(i, 1);
-      mini.remove();
-    }
+    requestAnimationFrame(tick);
   }
-  requestAnimationFrame(mTick);
-}
 
   function resetIdle() {
     clearTimeout(idleTimer);
