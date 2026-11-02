@@ -251,4 +251,5 @@
     addEventListener(ev, resetIdle, { passive: true })
   );
   resetIdle();
+  window.ciliphusFloat = { start, stop };
 })();
