@@ -34,9 +34,9 @@
   .sweeper .leg.left  { transform: rotate(30deg); }
   .sweeper .leg.right { transform: rotate(-30deg); }
   .sweeper .broom {
-    position: absolute; top: 112px; left: 6px;
+    position: absolute; top: 128px; left: 6px;
     width: 78px; height: 7px; background: #8b5a2b;
-    transform: rotate(-82deg); transform-origin: left center;
+    transform: rotate(-18deg); transform-origin: left center;
   }
   .sweeper .broom::after {
     content: "";
@@ -50,7 +50,7 @@
   @keyframes walkL { 0%,100%{transform:rotate(34deg)} 50%{transform:rotate(-34deg)} }
   @keyframes walkR { 0%,100%{transform:rotate(-34deg)} 50%{transform:rotate(34deg)} }
   @keyframes sweepArm { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(8deg)} }
-  @keyframes sweepBroom { 0%,100%{transform:rotate(-86deg)} 50%{transform:rotate(-72deg)} }
+  @keyframes sweepBroom { 0%,100%{transform:rotate(-22deg)} 50%{transform:rotate(-8deg)} }
   `;
   document.head.appendChild(style);
 
@@ -94,8 +94,8 @@
     // Push existing minishards hard to the right
     float.rubble.forEach(m => {
       if (m.el) {
-        m.vx = 220 + Math.random() * 100;
-        m.vy = -60;
+        m.vx = 320 + Math.random() * 140;
+        m.vy = -20;
       }
     });
 
