@@ -34,9 +34,9 @@
   .sweeper .leg.left  { transform: rotate(30deg); }
   .sweeper .leg.right { transform: rotate(-30deg); }
   .sweeper .broom {
-    position: absolute; top: 128px; left: 6px;
+    position: absolute; top: 138px; left: 6px;
     width: 78px; height: 7px; background: #8b5a2b;
-    transform: rotate(-18deg); transform-origin: left center;
+    transform: rotate(-6deg); transform-origin: left center;
   }
   .sweeper .broom::after {
     content: "";
@@ -50,7 +50,7 @@
   @keyframes walkL { 0%,100%{transform:rotate(34deg)} 50%{transform:rotate(-34deg)} }
   @keyframes walkR { 0%,100%{transform:rotate(-34deg)} 50%{transform:rotate(34deg)} }
   @keyframes sweepArm { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(8deg)} }
-  @keyframes sweepBroom { 0%,100%{transform:rotate(-22deg)} 50%{transform:rotate(-8deg)} }
+  @keyframes sweepBroom { 0%,100%{transform:rotate(-10deg)} 50%{transform:rotate(4deg)} }
   `;
   document.head.appendChild(style);
 
@@ -91,13 +91,22 @@
     guy.classList.remove("walking");
     guy.classList.add("sweeping");
 
-    // Push existing minishards hard to the right
-    float.rubble.forEach(m => {
-      if (m.el) {
-        m.vx = 320 + Math.random() * 140;
-        m.vy = -20;
-      }
-    });
+    // Continuously shove minishards that are near the broom while sweeping
+    const sweepEnd = performance.now() + 1800;
+    function pushNear() {
+      if (performance.now() > sweepEnd) return;
+      const broomX = guy.getBoundingClientRect().left + 70;
+      float.rubble.forEach(m => {
+        if (!m.el) return;
+        const dx = m.x - broomX;
+        if (Math.abs(dx) < 55 && m.y > innerHeight - 80) {
+          m.vx = Math.max(m.vx, 280 + Math.random() * 80);
+          m.vy = Math.min(m.vy, -10);
+        }
+      });
+      requestAnimationFrame(pushNear);
+    }
+    pushNear();
 
     await sleep(1800);
     guy.classList.remove("sweeping");
