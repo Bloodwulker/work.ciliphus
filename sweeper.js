@@ -3,54 +3,54 @@
   style.textContent = `
   .sweeper {
     position: fixed;
-    bottom: 28px;
-    left: -140px;
-    width: 90px;
-    height: 150px;
+    bottom: 18px;
+    left: -160px;
+    width: 100px;
+    height: 160px;
     z-index: 60;
     pointer-events: none;
   }
   .sweeper .head {
-    position: absolute; top: 0; left: 26px;
-    width: 38px; height: 38px;
+    position: absolute; top: 0; left: 30px;
+    width: 40px; height: 40px;
     background: #fff; border: 3px solid #111; border-radius: 50%;
   }
   .sweeper .body {
-    position: absolute; top: 38px; left: 43px;
-    width: 4px; height: 52px; background: #111;
+    position: absolute; top: 40px; left: 48px;
+    width: 4px; height: 54px; background: #111;
   }
   .sweeper .arm {
-    position: absolute; top: 50px; left: 45px;
-    width: 4px; height: 42px; background: #111;
+    position: absolute; top: 52px; left: 50px;
+    width: 4px; height: 44px; background: #111;
     transform-origin: top center;
   }
-  .sweeper .arm.left  { transform: rotate(15deg); }
-  .sweeper .arm.right { transform: rotate(-5deg); }
+  .sweeper .arm.left  { transform: rotate(20deg); }
+  .sweeper .arm.right { transform: rotate(-10deg); }
   .sweeper .leg {
-    position: absolute; top: 88px; left: 43px;
-    width: 4px; height: 50px; background: #111;
+    position: absolute; top: 92px; left: 48px;
+    width: 4px; height: 52px; background: #111;
     transform-origin: top center;
   }
-  .sweeper .leg.left  { transform: rotate(28deg); }
-  .sweeper .leg.right { transform: rotate(-28deg); }
+  .sweeper .leg.left  { transform: rotate(30deg); }
+  .sweeper .leg.right { transform: rotate(-30deg); }
   .sweeper .broom {
-    position: absolute; top: 78px; left: 8px;
-    width: 70px; height: 6px; background: #8b5a2b;
-    transform: rotate(-62deg); transform-origin: left center;
+    position: absolute; top: 100px; left: 6px;
+    width: 78px; height: 7px; background: #8b5a2b;
+    transform: rotate(-70deg); transform-origin: left center;
   }
   .sweeper .broom::after {
     content: "";
-    position: absolute; right: -4px; top: -10px;
-    width: 18px; height: 26px; background: #333; border-radius: 2px;
+    position: absolute; right: -2px; top: -12px;
+    width: 20px; height: 28px; background: #222; border-radius: 2px;
   }
-  .sweeper.walking .leg.left  { animation: walkL 0.35s linear infinite; }
-  .sweeper.walking .leg.right { animation: walkR 0.35s linear infinite; }
-  .sweeper.sweeping .arm.right { animation: sweepArm 0.28s linear infinite; }
-  .sweeper.sweeping .broom    { animation: sweepBroom 0.28s linear infinite; }
-  @keyframes walkL { 0%,100%{transform:rotate(32deg)} 50%{transform:rotate(-32deg)} }
-  @keyframes walkR { 0%,100%{transform:rotate(-32deg)} 50%{transform:rotate(32deg)} }
-  @keyframes sweepArm { 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(12deg)} }
-  @keyframes sweepBroom { 0%,100%{transform:rotate(-68deg)} 50%{transform:rotate(-48deg)} }
+  .sweeper.walking .leg.left  { animation: walkL 0.32s linear infinite; }
+  .sweeper.walking .leg.right { animation: walkR 0.32s linear infinite; }
+  .sweeper.sweeping .arm.right { animation: sweepArm 0.26s linear infinite; }
+  .sweeper.sweeping .broom    { animation: sweepBroom 0.26s linear infinite; }
+  @keyframes walkL { 0%,100%{transform:rotate(34deg)} 50%{transform:rotate(-34deg)} }
+  @keyframes walkR { 0%,100%{transform:rotate(-34deg)} 50%{transform:rotate(34deg)} }
+  @keyframes sweepArm { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(8deg)} }
+  @keyframes sweepBroom { 0%,100%{transform:rotate(-74deg)} 50%{transform:rotate(-58deg)} }
   `;
   document.head.appendChild(style);
 
@@ -75,31 +75,40 @@
     if (!float) return;
     float.pause();
 
-    // explode any badges still visible
-    float.badges().forEach(b => {
-      if (b.style.opacity !== "0") float.makeShards(b);
-    });
-
     const guy = makeSweeper();
     guy.classList.add("walking");
-    await move(guy, -140, 180, 1600);
-    guy.classList.remove("walking");
-    guy.classList.add("sweeping");
 
-    // push minishards right
-    float.rubble.forEach(m => {
-      if (m.el) {
-        m.vx = 180 + Math.random() * 80;
-        m.vy = -40;
+    // Walk in to about 30% of the screen
+    await move(guy, -160, innerWidth * 0.28, 1400);
+
+    // Explode any still-visible badges while he's on screen
+    float.badges().forEach(b => {
+      if (parseFloat(b.style.opacity || "1") > 0.1) {
+        float.makeShards(b);
       }
     });
 
-    await sleep(1600);
+    guy.classList.remove("walking");
+    guy.classList.add("sweeping");
+
+    // Push existing minishards hard to the right
+    float.rubble.forEach(m => {
+      if (m.el) {
+        m.vx = 220 + Math.random() * 100;
+        m.vy = -60;
+      }
+    });
+
+    await sleep(1800);
     guy.classList.remove("sweeping");
     guy.classList.add("walking");
-    await move(guy, 180, innerWidth + 160, 1800);
+
+    // Walk off
+    await move(guy, parseFloat(guy.style.left) || innerWidth * 0.28, innerWidth + 180, 1600);
     guy.remove();
 
+    // Reset badges cleanly to the bottom then resume
+    float.resetToBottom();
     float.resume();
   }
 
