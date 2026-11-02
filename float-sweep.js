@@ -269,7 +269,7 @@
   }
 
   ["pointermove", "keydown", "wheel", "input"].forEach(ev =>
-    addEventListener(ev, resetIdle, { passive: true })
+    addEventListener(ev, e => { if (ev === "keydown" && e.key === "c") return; resetIdle(); }, { passive: true })
   );
   resetIdle();
 
