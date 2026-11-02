@@ -34,9 +34,9 @@
   .sweeper .leg.left  { transform: rotate(30deg); }
   .sweeper .leg.right { transform: rotate(-30deg); }
   .sweeper .broom {
-    position: absolute; top: 100px; left: 6px;
+    position: absolute; top: 112px; left: 6px;
     width: 78px; height: 7px; background: #8b5a2b;
-    transform: rotate(-70deg); transform-origin: left center;
+    transform: rotate(-82deg); transform-origin: left center;
   }
   .sweeper .broom::after {
     content: "";
@@ -50,7 +50,7 @@
   @keyframes walkL { 0%,100%{transform:rotate(34deg)} 50%{transform:rotate(-34deg)} }
   @keyframes walkR { 0%,100%{transform:rotate(-34deg)} 50%{transform:rotate(34deg)} }
   @keyframes sweepArm { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(8deg)} }
-  @keyframes sweepBroom { 0%,100%{transform:rotate(-74deg)} 50%{transform:rotate(-58deg)} }
+  @keyframes sweepBroom { 0%,100%{transform:rotate(-86deg)} 50%{transform:rotate(-72deg)} }
   `;
   document.head.appendChild(style);
 
