@@ -188,6 +188,7 @@
       b.style.left = x + "px";
       b.style.top  = y + "px";
       b.style.transform = "translate(-50%,-50%)";
+      b.style.opacity = "";
     });
     let last = performance.now();
     function tick(now) {
@@ -256,10 +257,21 @@
   function pause() { paused = true; }
   function resume() { paused = false; }
 
+  // Reset all badges to just below the floor so they rise cleanly
+  function resetToBottom() {
+    badges().forEach(b => {
+      b.classList.remove("melting");
+      b.style.opacity = "";
+      const newY = innerHeight + b.offsetHeight + 20;
+      b.dataset.y = newY;
+      b.style.top = newY + "px";
+    });
+  }
+
   ["pointermove", "keydown", "wheel", "input"].forEach(ev =>
     addEventListener(ev, resetIdle, { passive: true })
   );
   resetIdle();
 
-  window.ciliphusFloat = { start, stop, pause, resume, rubble, badges, makeShards };
+  window.ciliphusFloat = { start, stop, pause, resume, rubble, badges, makeShards, resetToBottom };
 })();
