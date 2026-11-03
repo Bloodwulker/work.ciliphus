@@ -1,12 +1,3 @@
-/* sweep.js — replaces float-sweep.js + sweeper.js
-   Idle still floats the badges. Press C to burst what's on screen,
-   then a sweeper walks the floor and bulldozes the pieces off the right.
-   Load ONLY this file:
-     <!-- <script src="float.js"></script> -->
-     <!-- <script src="float-sweep.js"></script> -->
-     <!-- <script src="sweeper.js"></script> -->
-     <script src="sweep.js"></script>
-*/
 (() => {
   const IDLE = 15000;
   const VW = 170, VH = 210;
