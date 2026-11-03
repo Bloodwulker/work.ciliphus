@@ -350,57 +350,127 @@
     });
   }
 
+  function xOverlap(a, b) {
+    return Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+  }
+
+  function supportY(m) {
+    const floor = innerHeight - m.h - 8;
+    let stand = floor;
+    for (let i = 0; i < debris.length; i++) {
+      const o = debris[i];
+      if (o === m || o.big || o.life <= 0) continue;
+      if (xOverlap(m, o) < Math.min(m.w, o.w) * 0.45) continue;
+      if (o.y + 1 < m.y + m.h * 0.55) continue;
+      const rest = o.y - m.h;
+      if (rest < stand) stand = rest;
+    }
+    return stand;
+  }
+
   function moveDebris(dt, brush) {
-    const floorPad = 8;
     for (let i = debris.length - 1; i >= 0; i--) {
       const m = debris[i];
-      m.vy += 1100 * dt;
-      m.vx *= 0.992;
-      m.x += m.vx * dt;
-      m.y += m.vy * dt;
-      m.rot += m.spin * dt;
       m.life -= dt * 0.12;
+      if (m.life <= 0 || m.x > innerWidth + 40) {
+        killBit(m);
+        continue;
+      }
 
-      const floor = innerHeight - m.h - floorPad;
-      if (m.y >= floor) {
-        m.y = floor;
-        m.settled = true;
+      if (m.settled) {
+        const stand = supportY(m);
+        if (stand > m.y + 2) {
+          m.settled = false;
+          m.vy = 20;
+        } else {
+          m.y = stand;
+          m.vx = 0;
+          m.vy = 0;
+          m.spin = 0;
+        }
+      }
+
+      if (!m.settled) {
+        m.vy += 1100 * dt;
+        m.vx *= 0.992;
+        m.spin *= 0.99;
+        m.x += m.vx * dt;
+        m.y += m.vy * dt;
+        m.rot += m.spin * dt;
+        if (m.x < 0) { m.x = 0; m.vx = Math.abs(m.vx) * 0.4; }
+        if (m.x + m.w > innerWidth) { m.x = innerWidth - m.w; m.vx = -Math.abs(m.vx) * 0.4; }
+      }
+    }
+
+    if (brush) {
+      for (let i = debris.length - 1; i >= 0; i--) {
+        const m = debris[i];
+        if (m.y + m.h < brush.top) continue;
+        if (m.x + m.w <= brush.left || m.x >= brush.right) continue;
         if (m.big) {
           shatter(m);
           killBit(m);
           continue;
         }
-        m.vy *= -0.32;
-        m.vx *= 0.72;
-        if (Math.abs(m.vy) < 50) m.vy = 0;
+        m.settled = false;
+        m.x = brush.right + 1;
+        m.vx = Math.max(m.vx, 260);
+        m.vy = -80 - Math.random() * 40;
+        m.spin = (Math.random() > 0.5 ? 1 : -1) * 280;
+      }
+    }
+
+    const bits = debris.filter(m => m.life > 0 && !m.big);
+    bits.sort((a, b) => (b.y + b.h) - (a.y + a.h));
+    for (let i = 0; i < bits.length; i++) {
+      const m = bits[i];
+      const floor = innerHeight - m.h - 8;
+      if (m.big) continue;
+
+      let stand = floor;
+      for (let j = 0; j < bits.length; j++) {
+        const o = bits[j];
+        if (o === m) continue;
+        if (xOverlap(m, o) < Math.min(m.w, o.w) * 0.45) continue;
+        if (o.y + 1 < m.y + m.h * 0.55) continue;
+        const rest = o.y - m.h;
+        if (rest < stand) stand = rest;
       }
 
-      if (brush && m.y > brush.top) {
-        const overlaps = m.x + m.w > brush.left && m.x < brush.right;
-        if (overlaps) {
-          if (m.big) {
-            shatter(m);
-            killBit(m);
-            continue;
-          }
-          // Sit the piece on the front lip of the brush and kick it along.
-          m.x = brush.right + 1;
-          m.vx = Math.max(m.vx, 260);
-          if (m.vy > -10) m.vy = -90 - Math.random() * 50;
-          m.spin = (Math.random() > 0.5 ? 1 : -1) * 500;
-          m.settled = false;
+      if (m.y >= stand) {
+        m.y = stand;
+        m.vy = 0;
+        m.vx *= 0.4;
+        if (Math.abs(m.vx) < 14) m.vx = 0;
+        m.spin = 0;
+        m.settled = true;
+      }
+
+      for (let j = 0; j < i; j++) {
+        const o = bits[j];
+        const xo = xOverlap(m, o);
+        const yo = Math.min(m.y + m.h, o.y + o.h) - Math.max(m.y, o.y);
+        if (xo <= 1 || yo <= 1) continue;
+        if (yo > xo) {
+          const dir = (m.x + m.w / 2) <= (o.x + o.w / 2) ? -1 : 1;
+          m.x += dir * xo;
+          if (m.x < 0) m.x = 0;
+          if (m.x + m.w > innerWidth) m.x = innerWidth - m.w;
         }
       }
+    }
 
-      if (m.x < -40) { m.x = -40; m.vx = Math.abs(m.vx); }
-      if (m.x > innerWidth + 30 || m.life <= 0) {
+    for (let i = debris.length - 1; i >= 0; i--) {
+      const m = debris[i];
+      if (m.big && m.y >= innerHeight - m.h - 8) {
+        shatter(m);
         killBit(m);
         continue;
       }
-
       m.el.style.left = m.x + "px";
       m.el.style.top = m.y + "px";
       m.el.style.transform = `rotate(${m.rot}deg)`;
+      m.el.style.zIndex = String(30 + Math.max(0, Math.floor((innerHeight - m.y) / 3)));
     }
   }
 
