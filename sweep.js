@@ -28,7 +28,7 @@
 
   const debris = [];
   const DEBRIS_CAP = 420;
-  let idleTimer, raf, floating = false, sweeping = false;
+  let idleTimer, raf, floating = false, sweeping = false, sweepGen = 0;
   let sweepT0 = 0, guy = null, guyX = -SW;
   let last = 0;
 
@@ -211,9 +211,12 @@
     b.style.opacity = "";
     b.style.animation = "";
     b.style.transform = "translate(-50%,-50%)";
-    const y = innerHeight + (b.offsetHeight || 84) + 30 + Math.random() * 90;
+    const half = (b.offsetHeight || 84) / 2;
+    const y = innerHeight + half + 24;
     b.dataset.y = String(y);
     b.style.top = y + "px";
+    if (!b.dataset.speed) b.dataset.speed = 16 + Math.random() * 16;
+    if (!b.dataset.lean) b.dataset.lean = (Math.random() * 2 - 1) * 0.5;
     if (!b.dataset.x) {
       const x = 80 + Math.random() * Math.max(100, innerWidth - 160);
       b.dataset.x = String(x);
@@ -263,6 +266,7 @@
   function stop() {
     floating = false;
     sweeping = false;
+    sweepGen++;
     cancelAnimationFrame(raf);
     raf = 0;
     document.body.classList.remove("floating");
@@ -282,6 +286,7 @@
     if (sweeping) return;
     if (!floating) start();
     sweeping = true;
+    sweepGen++;
     clearTimeout(idleTimer);
     sweepT0 = performance.now();
     guyX = -SW - 40;
@@ -299,8 +304,20 @@
   function finishSweep() {
     sweeping = false;
     if (guy) { guy.svg.remove(); guy = null; }
-    badges().forEach(parkBelow);
-    idleTimer = setTimeout(() => { if (!sweeping) stop(); }, IDLE);
+    const gen = sweepGen;
+    const list = badges();
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    list.forEach((b, i) => {
+      b.classList.add("melting");
+      b.style.opacity = "0";
+      setTimeout(() => {
+        if (sweepGen !== gen || !floating || sweeping) return;
+        parkBelow(b);
+      }, 400 + i * 2200);
+    });
   }
 
   function moveBadges(dt) {
@@ -324,8 +341,9 @@
       if (y - half <= 4) {
         explode(b);
         const who = b;
+        const gen = sweepGen;
         setTimeout(() => {
-          if (!floating || sweeping) return;
+          if (!floating || sweeping || sweepGen !== gen) return;
           parkBelow(who);
         }, 1800);
       }
